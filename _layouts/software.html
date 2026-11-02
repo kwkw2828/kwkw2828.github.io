@@ -1,0 +1,21 @@
+---
+layout: default
+---
+<article>
+  <p><a href="{{ '/software/' | relative_url }}">ソフトウェア一覧へ戻る</a></p>
+  <h1>{{ page.title | escape }}</h1>
+  {% if page.description %}
+  <p class="lead">{{ page.description | escape }}</p>
+  {% endif %}
+  {% if page.download_url or page.source_url %}
+  <ul class="software-links">
+    {% if page.download_url %}
+    <li><a href="{{ page.download_url | relative_url | escape }}">ダウンロード</a></li>
+    {% endif %}
+    {% if page.source_url %}
+    <li><a href="{{ page.source_url | relative_url | escape }}">ソースコード</a></li>
+    {% endif %}
+  </ul>
+  {% endif %}
+  {{ content }}
+</article>

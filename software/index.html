@@ -1,0 +1,21 @@
+---
+title: ソフトウェア
+description: 公開している自作ソフトウェアの一覧です。
+permalink: /software/
+---
+<h1>ソフトウェア</h1>
+{% assign software_list = site.software | sort_natural: 'title' %}
+{% if software_list.size > 0 %}
+<ul class="software-list">
+  {% for software in software_list %}
+  <li>
+    <h2><a href="{{ software.url | relative_url }}">{{ software.title | escape }}</a></h2>
+    {% if software.description %}
+    <p>{{ software.description | escape }}</p>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>現在、公開に向けて準備中です。ソフトウェアの公開後、このページに掲載します。</p>
+{% endif %}

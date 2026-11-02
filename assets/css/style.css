@@ -1,0 +1,162 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  color: #243247;
+  background: #f5f7fb;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: #145bb5;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+a:focus-visible {
+  outline: 3px solid #145bb5;
+  outline-offset: 4px;
+}
+
+.container {
+  width: min(100% - 2rem, 56rem);
+  margin-inline: auto;
+}
+
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid #dce2ed;
+}
+
+.site-header .container,
+.site-footer .container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.25rem;
+}
+
+.site-title {
+  color: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+nav [aria-current="page"] {
+  font-weight: 700;
+}
+
+main {
+  flex: 1;
+  padding-block: 3rem;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  margin-top: 0;
+}
+
+h2 {
+  margin-top: 2rem;
+  font-size: 1.4rem;
+}
+
+.lead {
+  font-size: 1.1rem;
+}
+
+.software-list {
+  list-style: none;
+  padding: 0;
+}
+
+.software-list li {
+  background: #fff;
+  border: 1px solid #dce2ed;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-block: 1rem;
+}
+
+.software-list h2 {
+  margin-top: 0;
+}
+
+.software-list p:last-child {
+  margin-bottom: 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+pre {
+  overflow-x: auto;
+  padding: 1rem;
+  background: #e9edf4;
+  border-radius: 0.5rem;
+}
+
+code {
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #dce2ed;
+  padding: 0.5rem 0.75rem;
+}
+
+.site-footer {
+  border-top: 1px solid #dce2ed;
+  font-size: 0.9rem;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -10rem;
+  background: #fff;
+  padding: 0.5rem 1rem;
+}
+
+.skip-link:focus {
+  top: 0.5rem;
+}
