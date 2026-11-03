@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<!--
+  FreqSim のヘルプ。アプリの「ヘルプ」→「ヘルプ」（F1）で既定のブラウザに開く。
+  テストが XML として読むので、閉じタグを省かない・空要素は <br /> と書く・実体参照は &amp; &lt; &gt; &quot; だけにする。
+  一覧の表（id="function-list" など）は、テストがコードの一覧と突き合わせる。
+-->
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreqSim ヘルプ</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --fg: #1f2328;
+      --muted: #59636e;
+      --border: #d1d9e0;
+      --surface: #f4f6f8;
+      --accent: #0a5fbf;
+      --note-bg: #fff6dc;
+      --note-border: #d4a72c;
+      --warn: #9d5d00;
+      --coverage: #008000;
+      --toc-width: 15rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1b1d21;
+        --fg: #e4e6e9;
+        --muted: #a2a9b2;
+        --border: #3b4048;
+        --surface: #25282e;
+        --accent: #72b4ff;
+        --note-bg: #2e2815;
+        --note-border: #9c7a1e;
+        --warn: #e0a24a;
+        --coverage: #4cbb4c;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-padding-top: 1rem;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      /* font-family: "Yu Gothic UI", "Meiryo UI", Meiryo, sans-serif; */
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    code, kbd {
+      font-family: "Cascadia Mono", Consolas, "BIZ UDGothic", "MS Gothic", monospace;
+      font-size: 0.92em;
+    }
+
+    code {
+      padding: 0.05em 0.3em;
+      border-radius: 3px;
+      background: var(--surface);
+    }
+
+    kbd {
+      display: inline-block;
+      min-width: 1.6em;
+      padding: 0 0.4em;
+      border: 1px solid var(--border);
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      background: var(--surface);
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    /* 目次は左に固定し、本文だけをスクロールさせる */
+    #toc {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: var(--toc-width);
+      overflow-y: auto;
+      padding: 1.25rem 1rem 2rem 1.25rem;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 14px;
+    }
+
+    #toc .toc-title {
+      margin: 0 0 0.75rem;
+      font-weight: bold;
+    }
+
+    #toc ol {
+      margin: 0;
+      padding-left: 1.5rem;
+    }
+
+    #toc li {
+      margin: 0.15rem 0;
+    }
+
+    #toc a {
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    #toc a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    main {
+      max-width: 55rem;
+      margin-left: var(--toc-width);
+      padding: 1.5rem 2.5rem 6rem;
+    }
+
+    h1 {
+      margin: 0 0 0.25rem;
+      font-size: 1.8rem;
+    }
+
+    .lead {
+      margin: 0 0 2rem;
+      color: var(--muted);
+    }
+
+    h2 {
+      margin: 3rem 0 1rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 1.4rem;
+    }
+
+    h3 {
+      margin: 2rem 0 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    h4 {
+      margin: 1.5rem 0 0.25rem;
+      font-size: 1rem;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 0.75rem 0 1rem;
+    }
+
+    th, td {
+      padding: 0.3rem 0.75rem;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    thead th {
+      background: var(--surface);
+    }
+
+    /* 表の中の区切りの見出し（関数の種類など） */
+    tbody th[colspan] {
+      background: var(--surface);
+      font-weight: normal;
+      color: var(--muted);
+    }
+
+    td code {
+      white-space: nowrap;
+    }
+
+    .note {
+      margin: 1rem 0;
+      padding: 0.6rem 1rem;
+      border-left: 4px solid var(--note-border);
+      background: var(--note-bg);
+    }
+
+    .note p {
+      margin: 0.25rem 0;
+    }
+
+    .pending {
+      color: var(--muted);
+    }
+
+    /* 図は本文の補助。本文だけで読めるように書き、図は手書きの SVG を埋め込む（_memo/app-shell.md「ヘルプ」） */
+    figure {
+      margin: 1rem 0 1.5rem;
+    }
+
+    figure svg {
+      display: block;
+      width: 100%;
+      max-width: 45rem;
+      height: auto;
+    }
+
+    /* アプリの書き出しの図。色は固定なので、ダークモードでは紙のカードに見せる */
+    figure img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border: 1px solid var(--border);
+    }
+
+    figcaption {
+      margin-top: 0.4rem;
+      color: var(--muted);
+      font-size: 0.9em;
+    }
+
+    /* 図の中の色は本文と同じ変数で塗り、ダークモードでも追随させる */
+    .fig text {
+      fill: var(--fg);
+      font-size: 14px;
+      dominant-baseline: central;
+    }
+
+    .fig .fig-strong {
+      font-weight: bold;
+    }
+
+    .fig .fig-small {
+      fill: var(--muted);
+      font-size: 12px;
+    }
+
+    .fig .fig-code {
+      font-family: "Cascadia Mono", Consolas, "BIZ UDGothic", "MS Gothic", monospace;
+    }
+
+    .fig .fig-pane {
+      fill: var(--surface);
+      stroke: var(--muted);
+    }
+
+    .fig .fig-paper {
+      fill: var(--bg);
+      stroke: var(--muted);
+    }
+
+    .fig .fig-optional {
+      fill: none;
+      stroke: var(--muted);
+      stroke-dasharray: 5 3;
+    }
+
+    .fig .fig-line {
+      fill: none;
+      stroke: var(--fg);
+      stroke-width: 1.5;
+    }
+
+    .fig .fig-code-bg {
+      fill: var(--surface);
+    }
+
+    .fig .fig-leader {
+      fill: none;
+      stroke: var(--muted);
+    }
+
+    .fig .fig-track {
+      fill: none;
+      stroke: var(--muted);
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    .fig .fig-arrow {
+      fill: var(--fg);
+    }
+
+    .fig .fig-dot {
+      fill: var(--muted);
+    }
+
+    /* 外部データの周波数範囲の図。帯の色はウィンドウと同じ意味で塗る */
+    .fig .fig-band-sweep {
+      fill: var(--muted);
+    }
+
+    .fig .fig-band-data {
+      fill: var(--accent);
+    }
+
+    .fig .fig-band-out {
+      fill: var(--warn);
+    }
+
+    .fig .fig-coverage {
+      fill: var(--coverage);
+      fill-opacity: 0.25;
+    }
+
+    .fig .fig-selected {
+      fill: var(--accent);
+      fill-opacity: 0.12;
+    }
+
+    /* ウィンドウのボタンの絵柄。アプリと同じ Windows のアイコンの書体で描く */
+    .fig .fig-icon {
+      font-family: "Segoe Fluent Icons", "Segoe MDL2 Assets", sans-serif;
+      fill: var(--muted);
+    }
+
+    .fig .fig-grid {
+      fill: none;
+      stroke: var(--border);
+    }
+
+    .fig .fig-edge {
+      fill: none;
+      stroke: var(--fg);
+    }
+
+    .fig .fig-warn {
+      fill: var(--warn);
+    }
+
+    /* 狭いウィンドウでは目次を上に置く */
+    @media (max-width: 52rem) {
+      #toc {
+        position: static;
+        width: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      main {
+        margin-left: 0;
+        padding: 1rem 1rem 4rem;
+      }
+    }
+
+    @media print {
+      #toc {
+        display: none;
+      }
+
+      main {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      h2 {
+        break-after: avoid;
+      }
+
+      table, .note, figure {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav id="toc" aria-label="目次">
+    <p class="toc-title">FreqSim ヘルプ</p>
+    <ol>
+      <li><a href="#workflow">操作の流れ</a></li>
+      <li><a href="#screen">画面とマウス操作</a></li>
+      <li><a href="#parts">部品</a></li>
+      <li><a href="#values">値の書き方</a></li>
+      <li><a href="#directives">解析設定と変数</a></li>
+      <li><a href="#plots">グラフ</a></li>
+      <li><a href="#tuning">チューニング</a></li>
+      <li><a href="#visualization">回路の可視化</a></li>
+      <li><a href="#subcircuits">サブサーキット</a></li>
+      <li><a href="#s-parameters">Sパラメータ</a></li>
+      <li><a href="#files">ファイルと書き出し</a></li>
+      <li><a href="#keys">キー操作の一覧</a></li>
+      <li><a href="#settings">設定</a></li>
+      <li><a href="#diagnostics">診断</a></li>
+      <li><a href="#limitations">できないこと</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <h1>FreqSim ヘルプ</h1>
+    <p class="lead">
+      R・C・L などを組み合わせた線形回路の周波数特性を計算する、AC 解析専用の回路シミュレータです。
+      ブラウザの検索（<kbd>Ctrl</kbd>+<kbd>F</kbd>）で、このページ全体を探せます。
+      最新版は<a href="https://kwkw2828.github.io/software/freqsim/">配布ページ</a>で入手できます。
+    </p>
+
+    <section id="workflow">
+      <h2>操作の流れ</h2>
+
+      <h3>まずサンプルを動かす</h3>
+      <p>
+        「ファイル」→「サンプルを開く ...」で <b>01_RCローパス</b> を選んで開いたら、<kbd>F5</kbd> を押してください。
+        回路上のグラフに、周波数特性が描かれます。
+        サンプルは易しいものから順に並んでいて、それぞれに見どころと「やってみよう」が書いてあります。
+      </p>
+
+      <h3>新しく回路を描く</h3>
+      <ol>
+        <li>左のパレットで部品を選び、回路図をクリックして置きます（<kbd>Ctrl</kbd>+<kbd>R</kbd> で回転、<kbd>Ctrl</kbd>+<kbd>E</kbd> で左右反転）。</li>
+        <li><kbd>W</kbd> でワイヤに切り替え、端子から端子へクリックでつなぎます（右クリックで引きかけを取り消し）。</li>
+        <li><kbd>G</kbd> で GND を置きます。</li>
+        <li>見たいノードに <kbd>N</kbd> でネットラベルを付けます。クリックすると名前のウィンドウが開きます（例: <code>out</code>。日本語の名前も使えます）。ワイヤをダブルクリックしても付けられます。</li>
+        <li><kbd>A</kbd> で解析設定を置きます。既定は <code>.ac dec 100 10k 100M</code> で、そのまま OK で配置すれば解析できる設定値です。</li>
+        <li><kbd>F5</kbd> で実行します。グラフが1枚も無ければ、回路の下（縦長の回路なら右）に、最初に置いたネットラベルのノードの電圧のボード線図が自動で置かれます。</li>
+        <li>値を変えるには、部品をダブルクリックします（または選んで <kbd>Enter</kbd> / <kbd>F2</kbd>）。</li>
+      </ol>
+
+      <figure>
+        <img src="img/new-circuit.svg" alt="RC ローパスの回路図と、その下に自動で置かれた V(out) のボード線図" />
+        <figcaption>手順どおりに描いて <kbd>F5</kbd> を押したところ。回路の下に <code>V(out)</code> のボード線図が置かれます（左の軸が dB、右の軸が位相で破線）。</figcaption>
+      </figure>
+
+      <ul>
+        <li>解析は <kbd>F5</kbd> を押したときだけ行います。実行後に回路を編集すると、ステータスバーに「結果が古い」と出ます。</li>
+        <li>エラーと警告は画面下の診断に出ます。行をダブルクリックすると、該当する部品へ移動します。</li>
+      </ul>
+
+      <p>
+        部品の種類は<a href="#parts">部品</a>、値や式の書き方は<a href="#values">値の書き方</a>、
+        グラフに描く式は<a href="#plots">グラフ</a>を見てください。
+      </p>
+    </section>
+
+    <section id="screen">
+      <h2>画面とマウス操作</h2>
+
+      <h3 id="layout">画面の構成</h3>
+      <figure>
+        <svg class="fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" role="img" aria-label="メインの画面の並び">
+          <rect class="fig-paper" x="0.5" y="0.5" width="719" height="399" />
+          <rect class="fig-pane" x="0.5" y="0.5" width="719" height="28" />
+          <text x="12" y="15">メニュー</text>
+          <rect class="fig-pane" x="0.5" y="28.5" width="719" height="28" />
+          <text x="12" y="43">ツールバー</text>
+          <rect class="fig-pane" x="0.5" y="56.5" width="120" height="316" />
+          <text x="60.5" y="214" text-anchor="middle">部品パレット</text>
+          <rect class="fig-pane" x="120.5" y="56.5" width="599" height="28" />
+          <text x="132" y="71">文書タブ</text>
+          <rect class="fig-optional" x="124" y="88" width="432" height="22" />
+          <text x="134" y="99">表示対象の解析データ</text>
+          <text class="fig-small" x="286" y="99">結果が2つ以上のときだけ</text>
+          <rect class="fig-optional" x="124" y="114" width="432" height="30" />
+          <text x="134" y="129">可視化バー</text>
+          <text class="fig-small" x="214" y="129">可視化の間だけ</text>
+          <text x="340" y="228" text-anchor="middle">回路図</text>
+          <rect class="fig-optional" x="370" y="148" width="174" height="30" />
+          <text x="380" y="163">検索バー</text>
+          <text class="fig-small" x="438" y="163">開いている間だけ</text>
+          <rect class="fig-pane" x="548" y="148" width="10" height="154" />
+          <rect class="fig-pane" x="124" y="302" width="424" height="10" />
+          <text class="fig-small" x="540" y="290" text-anchor="end">スクロールバー</text>
+          <rect class="fig-optional" x="564" y="88" width="152" height="221" />
+          <text x="640" y="185" text-anchor="middle">端子ペイン</text>
+          <text class="fig-small" x="640" y="207" text-anchor="middle">サブサーキット</text>
+          <text class="fig-small" x="640" y="223" text-anchor="middle">回路図のときだけ</text>
+          <rect class="fig-optional" x="124" y="316" width="592" height="53" />
+          <text x="134" y="342">診断</text>
+          <text class="fig-small" x="170" y="342">エラーか警告があるときだけ</text>
+          <rect class="fig-pane" x="0.5" y="372.5" width="719" height="27" />
+          <text x="12" y="386">ステータスバー</text>
+        </svg>
+        <figcaption>メインの画面の並び。破線の部分は、条件があるときだけ出ます。</figcaption>
+      </figure>
+      <table>
+        <thead>
+          <tr><th>場所</th><th>内容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>メニューとツールバー</td><td>ファイル・編集・解析・設定・ヘルプ。ツールバーの各ボタンは、マウスを載せるとの説明が表示されます。</td></tr>
+          <tr><td>部品パレット</td><td>置く部品を選びます。右端の英字はショートカットキーです。伝送線路と図形は、押してから種類を選びます。</td></tr>
+          <tr><td>文書タブ</td><td>開いている回路図。未保存なら名前の先頭に * が付きます。ドラッグで並べ替えられます。</td></tr>
+          <tr><td>表示対象の解析データ</td><td><code>.ac</code>か<code>.sp</code>による解析の結果が2つ以上あるときだけ出ます。グラフ・書き出し・可視化に使う結果を選びます。</td></tr>
+          <tr><td>回路図</td><td>部品とグラフを置く部分です。</td></tr>
+          <tr><td>スクロールバー</td><td>回路図の右と下にあります。つまみの位置と大きさで、回路図全体のどこをどれだけ見ているかが分かります。つまみをドラッグするか、矢印や溝をクリックすると、表示範囲が動きます。回路図の端から画面の半分まで、外側へも送れます。バーの上でホイールを回すと、そのバーの向きに動きます。何も置いていない回路図では動きません。</td></tr>
+          <tr><td>検索バー</td><td><kbd>Ctrl</kbd>+<kbd>F</kbd> で回路図の隅（最初は右上）に重ねて出ます（<a href="#search">回路図の検索</a>）。</td></tr>
+          <tr><td>可視化バー</td><td>回路の可視化をしている間だけ出ます（<a href="#visualization">回路の可視化</a>）。</td></tr>
+          <tr><td>端子ペイン</td><td>サブサーキット回路図のときだけ出ます。端子の順序と辺、パラメータ、使う側の箱の見た目（シンボルの図形・端子名）を決めます（<a href="#subcircuits">サブサーキット</a>）。</td></tr>
+          <tr><td>診断</td><td>エラーと警告があるときだけ出ます。行をダブルクリックすると、該当する部品へ移動します（<a href="#diagnostics">診断</a>）。</td></tr>
+          <tr><td>ステータスバー</td><td>今のツール、メッセージ、「結果が古い（再実行してください）」、マウスの下にある要素、グリッド座標、表示の倍率。</td></tr>
+        </tbody>
+      </table>
+
+      <h3 id="mouse">マウス操作</h3>
+      <table>
+        <thead>
+          <tr><th>操作</th><th>働き</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>クリック</td><td>要素を選びます。何も無い所をクリックすると、選択を解除します。</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+クリック、<kbd>Shift</kbd>+クリック</td><td>選択に足す・選択から外す。</td></tr>
+          <tr><td>ドラッグ（要素の上から）</td><td>選んでいるものをまとめて動かします。グリッドに吸着します。動かしている間は、<kbd>Esc</kbd>（取り消し）とカーソルキー（表示の移動）のほかのキーは効きません。</td></tr>
+          <tr><td><kbd>Ctrl</kbd> を押したままドラッグ</td><td>選んでいるものを複製して、離した所に置きます。元はそのまま残り、置いた複製が選ばれます。離したときに <kbd>Ctrl</kbd> を押していれば複製、離していれば移動です（途中で切り替えられます）。元の位置に戻して離すと何も置きません。複製はワイヤを追従させません。ID は貼り付けと同じく、重なれば振り直します（<a href="#ids">部品の ID</a>）。ネットラベルの名前の扱いも貼り付けと同じです（<a href="#settings">設定</a>の「貼り付け・複製したネットラベルの名前が重なったら変える」）。</td></tr>
+          <tr><td>ドラッグ（何も無い所から）</td><td>範囲選択。枠内か、枠に少しでも触れたものを選びます（設定で「完全に囲んだものだけ」にできます）。<kbd>Ctrl</kbd> か <kbd>Shift</kbd> を押しながらだと、今の選択に足します。</td></tr>
+          <tr><td><kbd>Alt</kbd> を押したままドラッグ</td><td>動かす間だけ、ワイヤの追従を切ります（「ワイヤを追従させる」が ON のとき）。「ワイヤを追従させる」が OFF のときは変化しません（追従なし）。</td></tr>
+          <tr><td><kbd>Shift</kbd> を押したままドラッグ</td><td>水平か垂直の一方だけに動かします。向きは大きく動かしたほうで、ドラッグの途中で押しても効きます。<kbd>Ctrl</kbd> と一緒に押すと、複製を水平か垂直に置きます。</td></tr>
+          <tr><td>ダブルクリック</td><td>部品はプロパティ、ワイヤはそのノードのネットラベル（<a href="#wire-label">ワイヤからノードに名前を付ける</a>）、解析設定と変数定義は設定のウィンドウ、グラフは「グラフ設定」を開きます。</td></tr>
+          <tr><td>右クリック</td><td>メニュー。部品などを置いている途中なら、それを取り消します（下を参照）。</td></tr>
+          <tr><td>右ドラッグ、中ボタンのドラッグ</td><td>表示範囲を移動します。</td></tr>
+          <tr><td>ホイール</td><td>マウスの下を中心に拡大縮小（12.5%〜800%）。グラフの上でも回路図全体が拡大縮小します。スクロールバーの上では、そのバーの向きに表示を動かします。</td></tr>
+          <tr><td>横ホイール</td><td>表示を左右に動かします（チルトホイール・親指ホイール）。</td></tr>
+          <tr><td>図形などのつまみのドラッグ</td><td>グラフや図形の大きさを変えます。</td></tr>
+          <tr><td>ドラッグ中に回路図の端へ</td><td>移動・複製・範囲選択・つまみのドラッグで、マウスを回路図の端まで持っていくと、表示範囲がその向きへ動き続けます。端から外へ離すほど速くなり、内側へ戻すと止まります。</td></tr>
+          <tr><td>カーソルのドラッグ</td><td>選んでいるグラフのカーソルを動かします（<a href="#cursors">カーソル</a>）。</td></tr>
+        </tbody>
+      </table>
+
+      <h3 id="placing">置くときと線を引くとき</h3>
+      <ul>
+        <li>部品は続けて何個でも置けます。<kbd>Esc</kbd> か右クリックで選択に戻ります。</li>
+        <li>磁気結合・コメント・グラフは、1つ置くと選択に戻ります。</li>
+        <li>
+          解析設定・変数定義・ネットラベル・磁気結合・コメントは、クリックすると設定のウィンドウが開き、OK で置かれます。
+          キャンセルすると何も置かれません。ネットラベルは、ウィンドウを閉じた後も続けて置けます。
+        </li>
+        <li>
+          ワイヤは、クリックするたびに L 字（横 → 縦）でつなぎます。部品の端子に着くと終わります。
+          右クリックで引きかけを捨て、もう一度右クリックすると選択に戻ります。
+        </li>
+        <li>図形は2点をクリックして引きます。円弧の角度は 15° 刻みです。</li>
+        <li>置いた直後に、マウスを動かさずにダブルクリックすると、置いた部品のプロパティが開きます。</li>
+      </ul>
+
+      <h3 id="context-menus">右クリックのメニュー</h3>
+      <table>
+        <thead>
+          <tr><th>場所</th><th>主な項目</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>部品などの上</td><td>プロパティ（1つだけ選んでいるとき）、CSVファイルの内容を表示 ...（値が <code>FILE=</code> の部品の上）、Touchstoneファイルの内容を表示 ...（Sパラブロックの上）、チューニング ...（<code>.tune</code> の上）、サブサーキット回路図を開く、端子の変更を取り込む、切り取り・コピー・貼り付け、回転・左右反転、無効化（短絡・開放）、チューニング対象にする・外す（<a href="#tuning-targets">素子をチューニング対象にする</a>）、選択範囲を画像に、削除</td></tr>
+          <tr><td>グラフの上</td><td>グラフ設定、ここにカーソルを追加、カーソルの削除、データを CSV に保存、画像として保存・コピー</td></tr>
+          <tr><td>何も無い所</td><td>貼り付け、回路図全体を画像として保存・コピー、解析結果の生データを CSV に保存、Touchstone に保存</td></tr>
+          <tr><td>診断の行</td><td>コピー（重大度・コード・場所・本文）</td></tr>
+        </tbody>
+      </table>
+
+      <h3 id="drop">ファイルのドロップ</h3>
+      <ul>
+        <li><code>.fsim</code>（回路図ファイル）は開きます。複数のファイルをまとめてドロップすると、まとめて開きます。</li>
+        <li>
+          <code>.fsub</code>（サブサーキット回路図のファイル） を回路図の上にドロップすると、開くか部品として置くかを尋ねます。
+          <kbd>Ctrl</kbd> を押しながらドロップすると、尋ねずに置きます。回路図の外にドロップすると開きます。
+        </li>
+        <li>Touchstone（<code>.s2p</code> など）は、Sパラブロックとして置きます。</li>
+        <li>置くときは、落とした後のクリックで場所を決めます。</li>
+        <li>電圧源などのプロパティウィンドウの値の欄に CSV をドロップすると、<code>FILE=</code> として入ります。</li>
+      </ul>
+
+      <h3 id="search">回路図の検索</h3>
+      <p>部品の ID や値、ネットラベル、コメントなど、回路図に描かれている文字を探して、見つけた要素を選びます。</p>
+      <ul>
+        <li>
+          <kbd>Ctrl</kbd>+<kbd>F</kbd>（編集メニューの「検索」、ツールバーの虫眼鏡）で検索バーが出ます。
+          打つたびに最初に一致したものを選択し、画面の外にあれば中央に表示します。一致が無ければ選択状態は変更しません。
+        </li>
+        <li>
+          <kbd>Enter</kbd> / <kbd>Shift</kbd>+<kbd>Enter</kbd> か <kbd>F3</kbd> / <kbd>Shift</kbd>+<kbd>F3</kbd> で、次・前の一致へ移ります。
+          回路図の上部から、同じ高さなら左から順に巡り、端まで行くと反対の端へ戻ります（戻ったという表示がステータスバーに出ます）。
+          検索バーを閉じていても、<kbd>F3</kbd> / <kbd>Shift</kbd>+<kbd>F3</kbd> は前回の入力値で探します。
+        </li>
+        <li>件数は、選択中のものが検索結果の何番目かと総数です（例えば <code>3 / 12</code>）。検索結果ではないものを選択していれば、総数だけ表示します（<code>12 件</code>）。</li>
+        <li>検索対象になるのは回路図に描かれている文字です。部品の ID と値（サブサーキットのパラメータの行を含む）、ポートの番号、ネットラベルの名前、磁気結合の本文、解析設定・変数定義・コメントの本文、グラフのトレース式。</li>
+        <li>部分一致です。また、大文字と小文字は区別しません。数として同じでも、書き方が違えばヒットしません（<code>10k</code> は <code>10000</code> でヒットしません）。</li>
+        <li>「単語」をONにすると、英数字が続いている部分を単語として扱い、単語と完全に一致する場合のみヒットします。<code>R1</code> は <code>R10</code> にヒットせず、例えばコメントの「R1に入力」にはヒットします。</li>
+        <li>「すべての欄」をONにすると、描かれていない欄も検索対象にします。ファイルの絶対パス（CSV・サブサーキット・Touchstone）、値の欄の形式の指定、表示していないサブサーキットのパラメータです。</li>
+        <li>検索対象は、開いているタブの中だけです。</li>
+        <li>バーの地か件数の文字を掴んでドラッグすると、四隅へ移せます。ドラッグを離すと一番近い隅に配置されます。</li>
+        <li>バーの欄で <kbd>Esc</kbd> を押すか、× で閉じます。</li>
+        <li>配置や貼り付けの途中で検索すると、それをやめて選択に戻ります。可視化中に検索を始めようとすると可視化を終わり、逆に検索中に可視化に入ると検索バーは閉じます。</li>
+      </ul>
+    </section>
+
+    <section id="parts">
+      <h2>部品</h2>
+
+      <h3 id="tool-keys">パレットの部品</h3>
+      <p>パレットの上から順に並べます。キーは、回路図にいるときに押すと、その部品に切り替わります。</p>
+      <table id="tool-key-list">
+        <thead>
+          <tr><th>キー</th><th>部品</th><th>説明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><kbd>Esc</kbd></td><td>選択</td><td>選択やドラッグ操作などの普段の状態に戻る</td></tr>
+          <tr><td><kbd>W</kbd></td><td>ワイヤ</td><td>端子同士を電気的に接続する</td></tr>
+          <tr><td><kbd>G</kbd></td><td>GND</td><td>基準電位（0 V）のノード</td></tr>
+          <tr><td><kbd>N</kbd></td><td>ネットラベル</td><td>ノードに名前を付ける。同じ名前のラベルは、離れていても同じノードになる（電気的に接続される）</td></tr>
+          <tr><td><kbd>T</kbd></td><td>端子</td><td>サブサーキット回路図の外とつなぐ点（サブサーキット回路図でのみ使用可能）</td></tr>
+          <tr><td><kbd>R</kbd></td><td>抵抗</td><td></td></tr>
+          <tr><td><kbd>C</kbd></td><td>キャパシタ</td><td>コンデンサとも呼ぶ</td></tr>
+          <tr><td><kbd>L</kbd></td><td>インダクタ</td><td>コイルとも呼ぶ</td></tr>
+          <tr><td><kbd>Z</kbd></td><td>インピーダンス</td><td>式または CSV ファイルで値を与える</td></tr>
+          <tr><td><kbd>Q</kbd></td><td>スイッチ</td><td>状態の値で、共通端子をどの接点につなぐかを選ぶ（<a href="#switch">スイッチ</a>）</td></tr>
+          <tr><td>－</td><td>伝送線路</td><td>押してから、伝送線路・開放スタブ・短絡スタブを選ぶ</td></tr>
+          <tr><td><kbd>V</kbd></td><td>電圧源</td><td></td></tr>
+          <tr><td><kbd>I</kbd></td><td>電流源</td><td></td></tr>
+          <tr><td><kbd>P</kbd></td><td>ポート</td><td>Sパラメータ解析での入出力ポート。AC 解析では Z0 の抵抗として働く（サブサーキット回路図には配置不可）</td></tr>
+          <tr><td><kbd>A</kbd></td><td>解析設定</td><td><code>.ac</code> / <code>.sp</code>（サブサーキット回路図には配置不可）</td></tr>
+          <tr><td><kbd>D</kbd></td><td>変数定義</td><td><code>.param</code> / <code>.tune</code></td></tr>
+          <tr><td><kbd>K</kbd></td><td>磁気結合</td><td>インダクタどうしを結合係数 k で結合する</td></tr>
+          <tr><td><kbd>X</kbd></td><td>サブサーキット</td><td>サブサーキット回路図（.fsub）を部品として置く。押すとファイルを尋ねる</td></tr>
+          <tr><td><kbd>S</kbd></td><td>Sパラブロック</td><td>Touchstone ファイルを部品として置く。押すとファイルを尋ねる</td></tr>
+          <tr><td><kbd>M</kbd></td><td>コメント</td><td>解析に影響しない文章</td></tr>
+          <tr><td>－</td><td>図形</td><td>押してから、直線・四角・楕円・円弧を選ぶ。解析に影響しない</td></tr>
+          <tr><td>－</td><td>直交グラフ・スミスチャート・極座標グラフ</td><td>解析の結果を描く（サブサーキット回路図には配置不可。<a href="#plots">グラフ</a>）</td></tr>
+        </tbody>
+      </table>
+      <p>回路図とサブサーキット回路図では、使用可能な部品が一部異なるので注意してください。</p>
+
+      <h3 id="part-properties">部品の設定</h3>
+      <p>
+        部品をダブルクリックするか、選んで <kbd>Enter</kbd> / <kbd>F2</kbd> を押すと、設定のウィンドウが開きます。
+        値や式に誤りがあっても、ウィンドウは OK で閉じられます。誤りは診断に出ます。
+      </p>
+      <table>
+        <thead>
+          <tr><th>部品</th><th>設定する項目</th><th>置いたときの値</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>抵抗・キャパシタ・インダクタ</td><td>値 [ohm] / [F] / [H]</td><td><code>1k</code> / <code>1n</code> / <code>1u</code></td></tr>
+          <tr><td>インピーダンス</td><td>Z [ohm]（式か CSV ファイル）</td><td><code>{j*2*pi*f*1u}</code>（1 µH のインダクタと同じ）</td></tr>
+          <tr><td>電圧源・電流源</td><td>振幅と位相、または式か CSV ファイル（<a href="#source-values">電源の値</a>）</td><td><code>1</code></td></tr>
+          <tr><td>ポート</td><td>番号（1 からの連番）と Z₀（正の実数。式は不可）</td><td>空いている最小の番号、50</td></tr>
+          <tr><td>磁気結合</td><td>結合するインダクタ（2つ以上）と k</td><td>先頭のインダクタ2つ、0.9</td></tr>
+          <tr><td>伝送線路・スタブ</td><td>Z₀ と長さ（電気長 θ と f₀、遅延 td、物理長 l と εeff のどれか）</td><td>50、90° @ 1G</td></tr>
+          <tr><td>スイッチ</td><td>接点数（1〜16）、状態（式も書ける）、OFF 抵抗 [ohm]（空欄なら 1G）</td><td>接点数 2、状態 1</td></tr>
+          <tr><td>サブサーキット</td><td>パラメータの値（空欄なら既定値）と、回路図に値を出すか</td><td></td></tr>
+          <tr><td>Sパラブロック</td><td>参照する Touchstone ファイルと、ピンの配置（<a href="#network-block">Sパラブロック</a>）</td><td></td></tr>
+          <tr><td>ネットラベル</td><td>名前</td><td><code>net1</code>、<code>net2</code>、…</td></tr>
+          <tr><td>コメント</td><td>本文、フォント、サイズ</td><td></td></tr>
+          <tr><td>図形</td><td>線種（実線・破線・点線・一点鎖線）</td><td></td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>GND には設定がありません。ワイヤでは、そのノードのネットラベルのウィンドウが開きます（<a href="#wire-label">ワイヤからノードに名前を付ける</a>）。</li>
+        <li>長い値や式を書くときは、ウィンドウの左右の端をドラッグして幅を広げられます。</li>
+        <li>
+          ポートの端子は2つです。片側を GND につなげば普通のポート、両側を回路につなげば差動のポートになります。
+          ただし、差動の計算をしたいときは、<a href="#mixed-mode">ミックスドモードSパラメータ</a>の利用を推奨します（片側を GND につなげた普通のポートを使用）。
+        </li>
+        <li>
+          磁気結合でインダクタを3つ以上選ぶと、すべての組を同じ k で結合します。
+          そのときの k は実数の定数で、−1/(N−1) 以上 1 以下にします（N はインダクタの数）。2つなら −1 以上 1 以下で、3つなら −0.5 以上 1 以下、4つなら −0.333 以上 1 以下。
+          式も書けます。
+        </li>
+        <li>
+          伝送線路に損失と分散はありません。値は実数で、Z₀ と f₀ は正、θ・td・l は 0 以上、εeff は 1 以上です。
+          端子は、伝送線路が4つ（入力側と出力側の信号と帰路）、スタブが2つ（信号と基準）です。
+        </li>
+        <li>スイッチは<a href="#switch">スイッチ</a>を見てください。</li>
+        <li>ネットラベルの名前を <code>0</code>（ゼロ） か <code>GND</code> にすると GND 扱いになりますが、紛らわしいため、基本的には GND を使ってください。</li>
+        <li>サブサーキットは<a href="#subcircuits">サブサーキット</a>、Sパラブロックは<a href="#s-parameters">Sパラメータ</a>を見てください。</li>
+      </ul>
+
+      <h3 id="wire-label">ワイヤからノードに名前を付ける</h3>
+      <p>
+        ワイヤをダブルクリックするか、選んで <kbd>Enter</kbd> / <kbd>F2</kbd> を押すか、右クリックの「プロパティ」を選ぶと、そのワイヤのノードに付けるネットラベルのウィンドウが開きます。
+      </p>
+      <ul>
+        <li>そのノードのワイヤ上にネットラベルがまだ無ければ、新しいラベルを配置します。OK でワイヤの上に置かれ、キャンセルすると何も置かれません。</li>
+        <li>そのワイヤに線でつながったネットラベルがあれば、そのラベルを変更できます（いくつかあれば、押した所にいちばん近いもの）。</li>
+        <li>GND につながったワイヤでは開きません。</li>
+      </ul>
+
+      <h3 id="ids">部品の ID</h3>
+      <ul>
+        <li>ID は種類の接頭文字に番号を付けたものです（<code>R1</code>、<code>C2</code>、<code>T1</code>）。接頭文字は R・C・L・Z・V・I・P（ポート）・K・X・S・T（伝送線路とスタブ）・Q（スイッチ）です。</li>
+        <li>ID はプロパティウィンドウで変えられます。接頭文字で始めて、ほかの ID と重ならないようにします。</li>
+        <li>ID を変えると、磁気結合の相手、グラフのトレース式と電源の値の <code>I(...)</code> も連動します。ネットラベルの名前を変えたときも、<code>V(...)</code> が連動します（同じ名前のラベルが別の所に残っているときのように、元の名前のノードがまだあるときは付け替えません）。</li>
+        <li>貼り付けた部品・複製した部品（<kbd>Ctrl</kbd> を押したままドラッグ）の ID が既にある ID とぶつかると、ぶつかったものだけ番号を振り直します。</li>
+      </ul>
+
+      <h3 id="disable">部品の短絡・開放</h3>
+      <p>
+        部品を選んで、ツールバー・「編集」メニュー・右クリックの「無効化（短絡）」「無効化（開放）」を押すと、
+        部品を消さずに両端をつなぐ（短絡）または切る（開放）ことができます。無効にした部品には × 印が付きます。
+      </p>
+      <ul>
+        <li>対象は、抵抗・キャパシタ・インダクタ・インピーダンス・電圧源・電流源・開放スタブ・短絡スタブです。</li>
+        <li>短絡は 0 Ω、開放は部品を取り外した状態として、理想的に解析します。無効にした部品の値は読まないため、値に誤りがあっても解析エラーになりません。</li>
+        <li>
+          使用例： 重ね合わせの理を確認するために独立電源を 0 にする場合、電圧源は短絡、電流源は開放にします。制御電源は 0 にしません。
+          制御電源の式に定数と制御が混ざっているときは、1つの電源に書くと短絡・開放で両方が消えるので、式と定数用の電源に分けて置きます。
+        </li>
+        <li>磁気結合の相手のインダクタを短絡・開放すると、そのインダクタとの結合は無いものとして解析します。</li>
+        <li>状態は回路図ファイルに保存されます。</li>
+      </ul>
+
+      <h3 id="switch">スイッチ</h3>
+      <p>
+        左の共通端子を、右に並んだ接点のどれにつなぐかを、状態の値で選ぶ部品です。
+        状態には式が書けるので、<code>.tune</code> の変数にすれば接続先を簡単に切り替えられます。
+      </p>
+      <figure>
+        <svg class="fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 210" role="img" aria-label="スイッチの記号とレバーの向き">
+          <text class="fig-strong" x="110" y="12" text-anchor="middle">状態 2</text>
+          <text class="fig-code" x="110" y="36" text-anchor="middle">Q1</text>
+          <text class="fig-code" x="110" y="58" text-anchor="middle">{切替}</text>
+          <path class="fig-line" d="M 62 90 H 86 M 138 90 H 158 M 138 138 H 158 M 138 186 H 158" />
+          <path class="fig-line" d="M 86 90 L 131.2 135.2" />
+          <circle class="fig-arrow" cx="86" cy="90" r="4" />
+          <circle class="fig-line" cx="134" cy="90" r="4" />
+          <circle class="fig-line" cx="134" cy="138" r="4" />
+          <circle class="fig-line" cx="134" cy="186" r="4" />
+          <text class="fig-small" x="148" y="78" text-anchor="middle">1</text>
+          <text class="fig-small" x="148" y="126" text-anchor="middle">2</text>
+          <text class="fig-small" x="148" y="174" text-anchor="middle">3</text>
+          <text class="fig-small" x="62" y="110" text-anchor="middle">com</text>
+
+          <text class="fig-strong" x="350" y="12" text-anchor="middle">状態 0</text>
+          <text class="fig-code" x="350" y="36" text-anchor="middle">Q2</text>
+          <text class="fig-code" x="350" y="58" text-anchor="middle">0</text>
+          <path class="fig-line" d="M 302 90 H 326 M 378 90 H 398 M 378 138 H 398" />
+          <path class="fig-line" d="M 326 90 L 367.8 75" />
+          <circle class="fig-arrow" cx="326" cy="90" r="4" />
+          <circle class="fig-line" cx="374" cy="90" r="4" />
+          <circle class="fig-line" cx="374" cy="138" r="4" />
+          <text class="fig-small" x="388" y="78" text-anchor="middle">1</text>
+          <text class="fig-small" x="388" y="126" text-anchor="middle">2</text>
+
+          <text class="fig-strong" x="590" y="12" text-anchor="middle">向きが決まらない</text>
+          <text class="fig-code" x="590" y="36" text-anchor="middle">Q3</text>
+          <text class="fig-code" x="590" y="58" text-anchor="middle">{f/1k}</text>
+          <path class="fig-line" d="M 542 90 H 566 M 618 90 H 638 M 618 138 H 638" />
+          <path class="fig-line" d="M 566 90 L 607.8 75" stroke-dasharray="5 3" />
+          <circle class="fig-arrow" cx="566" cy="90" r="4" />
+          <circle class="fig-line" cx="614" cy="90" r="4" />
+          <circle class="fig-line" cx="614" cy="138" r="4" />
+          <text class="fig-small" x="628" y="78" text-anchor="middle">1</text>
+          <text class="fig-small" x="628" y="126" text-anchor="middle">2</text>
+        </svg>
+        <figcaption>
+          スイッチの記号。左が共通端子（com）、右が接点で、上から 1、2、… と番号が付きます。
+          レバーは状態の値で選ばれた接点へ倒れ、0 なら上へ開きます。周波数に依存する式などで接点が決まらないときは、破線で描きます。
+        </figcaption>
+      </figure>
+      <ul>
+        <li>
+          状態は、値の実部を四捨五入した番号の接点につなぎます（2.5 は 3）。0 以下ならどこにもつながず、接点数を超えたら最後の接点につなぎます。
+          値が無限大などになった周波数は、解けなかった点になります。
+        </li>
+        <li>
+          つないだ接点は理想的な短絡（0 Ω）です。ほかの接点は、OFF 抵抗（既定 1 GΩ）で共通端子とつながります。
+          完全に切り離すと、つないでいない接点の先の回路が浮いて解けなくなるためです。
+        </li>
+        <li>
+          OFF 抵抗の漏れが問題になるような高インピーダンスの回路では、設定ウィンドウで OFF 抵抗を大きくします。空欄に戻すと既定値です。
+        </li>
+        <li>
+          接点数は 1〜16 です。共通端子と接点1は同じ高さにあり、接点数を変えると下の端の接点が増えたり減ったりします。
+          接点数を減らしたとき、消えた接点につないでいたワイヤは切れます（ほかの接点に付け替わることはありません）。
+        </li>
+        <li>使わない接点は空けておいてかまいません（未接続の警告は出ません）。共通端子の繋ぎ忘れは警告が出ます。</li>
+        <li>
+          端子の電流は、共通端子が <code>I(Q1, com)</code>、接点が番号で <code>I(Q1, 2)</code> です。どれも端子からスイッチへ入る向きが正です。
+          回路の可視化では、共通端子からレバーを通って、つないだ接点へ電流が流れます。
+        </li>
+        <li>
+          右クリック →「チューニング対象にする」で、状態をチューニング対象にできます（<a href="#tuning-targets">素子をチューニング対象にする</a>）。
+          つまみの範囲は 0〜接点数の線形になり、レバーもチューニングつまみに合わせて動きます。
+        </li>
+        <li>
+          サブサーキットの中のスイッチは、状態をパラメータ（<code>{sw}</code> など）にすると、インスタンスごとに切り替えられます。
+          そのサブサーキット回路図の中のレバーは破線になります。（インスタンスごとに値が違う可能性があるため）
+        </li>
+        <li>無効化（短絡・開放）はできません。</li>
+      </ul>
+    </section>
+
+    <section id="values">
+      <h2>値の書き方</h2>
+      <p>
+        部品の値・変数・トレース式は、同じ規則で書きます。
+        数値には SPICE とほぼ同じ接尾辞が使えます。ただし SPICE では <code>M</code> はミリですが、ここではメガです。
+        計算する値や複素数は、式として扱えるように <code>{}</code> で囲みます。
+      </p>
+
+      <h3 id="numbers">数値と接尾辞</h3>
+      <table id="suffix-list">
+        <thead>
+          <tr><th>接尾辞</th><th>倍率</th><th>例</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>T</code></td><td>10<sup>12</sup></td><td><code>1T</code></td></tr>
+          <tr><td><code>G</code></td><td>10<sup>9</sup></td><td><code>2.4G</code></td></tr>
+          <tr><td><code>M</code></td><td>10<sup>6</sup></td><td><code>10M</code>（<code>Meg</code> も使えます）</td></tr>
+          <tr><td><code>k</code></td><td>10<sup>3</sup></td><td><code>4.7k</code></td></tr>
+          <tr><td><code>m</code></td><td>10<sup>−3</sup></td><td><code>1m</code></td></tr>
+          <tr><td><code>u</code></td><td>10<sup>−6</sup></td><td><code>10u</code>（<code>µ</code> と <code>μ</code> も使えます）</td></tr>
+          <tr><td><code>n</code></td><td>10<sup>−9</sup></td><td><code>4.7n</code></td></tr>
+          <tr><td><code>p</code></td><td>10<sup>−12</sup></td><td><code>100p</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <p><b>M はメガ、m はミリです。</b>この2つだけは大文字と小文字で意味が変わります（<code>1M</code> は 1000000、<code>1m</code> は 0.001）。</p>
+      </div>
+
+      <ul>
+        <li><code>M</code> と <code>m</code> のほかは、大文字・小文字を区別しません（<code>4.7K</code> は <code>4.7k</code> と同じ）。</li>
+        <li>単位は書きません。<code>100nF</code> ではなく <code>100n</code>、<code>50ohm</code> ではなく <code>50</code> と書きます。</li>
+        <li>フェムト（f）はありません。<code>f</code> は周波数を表す名前です。<code>1p</code> より小さい値は <code>0.05p</code> や <code>5e-14</code> と書きます。</li>
+        <li>指数表記（<code>1e-9</code>、<code>2.5E3</code>）も使えます。</li>
+      </ul>
+
+      <h3 id="expressions">式</h3>
+      <p>
+        部品の値と <code>.param</code> の値では、式にしたいときは <code>{}</code> で囲みます。
+        トレース式（グラフに描く式）は囲まずに式を書きます。値はすべて複素数として計算します。
+      </p>
+      <table>
+        <thead>
+          <tr><th>例</th><th>意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>{2*Rbase}</code></td><td>変数 Rbase の 2 倍</td></tr>
+          <tr><td><code>{50+j*10}</code></td><td>複素数 50 + j10</td></tr>
+          <tr><td><code>{1/(s*1u)}</code></td><td>1 µF のキャパシタのインピーダンス 1/(jωC)</td></tr>
+          <tr><td><code>{1/(2*pi*sqrt(Lp*Cp))}</code></td><td>変数 Lp と Cp の共振周波数</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>使用できる演算子は <code>+</code> <code>-</code> <code>*</code> <code>/</code> <code>^</code>（べき乗）と括弧です。</li>
+        <li>掛け算の記号は省略できません。<code>2pi</code> は誤りで、<code>2*pi</code> と書きます。</li>
+        <li><code>^</code> は符号より先に計算します（<code>-2^2</code> は −4）。</li>
+        <li>式の中の数値にも接尾辞が使えます（<code>{1/(2*pi*1k*10n)}</code>）。</li>
+      </ul>
+
+      <h3 id="names-in-expressions">式で使える名前</h3>
+      <table id="reserved-names">
+        <thead>
+          <tr><th>名前</th><th>意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>f</code></td><td>周波数 [Hz]</td></tr>
+          <tr><td><code>w</code></td><td>角周波数 ω = 2πf [rad/s]</td></tr>
+          <tr><td><code>s</code></td><td>jω（伝達関数の s に jω を入れたもの）</td></tr>
+          <tr><td><code>pi</code></td><td>円周率 π</td></tr>
+          <tr><td><code>e</code></td><td>自然対数の底（2.718…）</td></tr>
+          <tr><td><code>j</code></td><td>虚数単位（<code>j*j</code> は −1）</td></tr>
+        </tbody>
+      </table>
+      <p>
+        このほか、<code>.param</code> と <code>.tune</code> で定義した変数が使えます（<a href="#directives">解析設定と変数</a>）。
+        上の6つと同じ名前の変数は、式からは参照できません（上の意味で読まれ、警告が出ます）。
+      </p>
+
+      <h3 id="functions">関数</h3>
+      <p>
+        部品の値・変数・トレース式で関数が使えます。引数は複素数でも構いません。
+        関数の名前も大文字・小文字を区別しません。
+      </p>
+      <table id="function-list">
+        <thead>
+          <tr><th>書き方</th><th>意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><th colspan="2">大きさと偏角</th></tr>
+          <tr><td><code>db(z)</code></td><td>デシベル 20·log<sub>10</sub>|z|。大きさが 0 なら −∞</td></tr>
+          <tr><td><code>mag(z)</code> <code>abs(z)</code></td><td>大きさ |z|（2つは同じ）</td></tr>
+          <tr><td><code>deg(z)</code></td><td>偏角 [度]。−180 より大きく 180 以下</td></tr>
+          <tr><td><code>rad(z)</code></td><td>偏角 [ラジアン]。−π より大きく π 以下</td></tr>
+        </tbody>
+        <tbody>
+          <tr><th colspan="2">実部と虚部</th></tr>
+          <tr><td><code>re(z)</code> <code>im(z)</code></td><td>実部、虚部</td></tr>
+          <tr><td><code>conj(z)</code></td><td>複素共役</td></tr>
+        </tbody>
+        <tbody>
+          <tr><th colspan="2">べき・指数・対数</th></tr>
+          <tr><td><code>sqrt(z)</code></td><td>平方根。負の数の平方根は虚数になる（<code>sqrt(-1)</code> は j）</td></tr>
+          <tr><td><code>pow(a, b)</code></td><td>a の b 乗。<code>a^b</code> と同じ</td></tr>
+          <tr><td><code>exp(z)</code></td><td>e の z 乗</td></tr>
+          <tr><td><code>ln(z)</code></td><td>自然対数</td></tr>
+          <tr><td><code>log10(z)</code></td><td>常用対数</td></tr>
+        </tbody>
+        <tbody>
+          <tr><th colspan="2">三角関数と双曲線関数</th></tr>
+          <tr><td><code>sin(z)</code> <code>cos(z)</code> <code>tan(z)</code></td><td>三角関数。引数はラジアン</td></tr>
+          <tr><td><code>asin(z)</code> <code>acos(z)</code> <code>atan(z)</code></td><td>逆三角関数。値はラジアン</td></tr>
+          <tr><td><code>sinh(z)</code> <code>cosh(z)</code> <code>tanh(z)</code></td><td>双曲線関数</td></tr>
+        </tbody>
+        <tbody>
+          <tr><th colspan="2">比較</th></tr>
+          <tr><td><code>min(a, b)</code> <code>max(a, b)</code></td><td>実部を比べて、小さいほう（大きいほう）をそのまま返す</td></tr>
+        </tbody>
+        <tbody>
+          <tr><th colspan="2">丸め（複素数は実部と虚部をそれぞれ丸める）</th></tr>
+          <tr><td><code>round(z)</code></td><td>最も近い整数。ちょうど .5 なら 0 から遠い側（<code>round(2.5)</code> は 3、<code>round(-2.5)</code> は −3）。使用例： 10p 刻みに揃えるなら <code>round(x/10p)*10p</code></td></tr>
+          <tr><td><code>floor(z)</code> <code>ceil(z)</code></td><td>それ以下の最大の整数、それ以上の最小の整数</td></tr>
+        </tbody>
+        <tbody>
+          <tr><th colspan="2">回路の計算</th></tr>
+          <tr><td><code>par(a, b)</code></td><td>並列合成 a·b/(a+b)。<code>par(1k, 1/(s*10n))</code> は 1kΩ と 10nF の並列。3つ以上は <code>par(a, par(b, c))</code> と入れ子にする</td></tr>
+          <tr><td><code>vswr(Γ)</code></td><td>反射係数 Γ から定在波比 (1+|Γ|)/(1−|Γ|)。|Γ| が 1 以上なら +∞（<code>vswr(S(1,1))</code>）</td></tr>
+        </tbody>
+      </table>
+      <div class="note">
+        <p>
+          <code>deg</code> と <code>rad</code> は複素数の偏角を求めます。角度を換算する関数ではありません。
+          45° をラジアンにするなら <code>45*pi/180</code> と書きます。
+          実数と分かっている値（<code>rad(45)</code> など）に使うとエラーになります。
+        </p>
+      </div>
+
+      <h3 id="source-values">電源の値</h3>
+      <p>電圧源・電流源の値は「振幅 位相」です。位相の単位は度で、省略すると 0° です。</p>
+      <table>
+        <thead>
+          <tr><th>例</th><th>意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>1</code></td><td>振幅 1、位相 0°</td></tr>
+          <tr><td><code>1 45</code></td><td>振幅 1、位相 45°</td></tr>
+          <tr><td><code>{1+j}</code></td><td>複素数で直接書く（振幅 √2、位相 45°の例）</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>振幅と位相を分けて書く形では、式は使えません。式で書くときは、複素数の振幅を1つの <code>{}</code> にします。</li>
+        <li>値は実効値ではなく振幅（ピーク値）です。電力を求めるときは 2 で割ります。</li>
+        <li>SPICE のように先頭に <code>AC</code> と書いても構いません（読み飛ばします）。</li>
+      </ul>
+
+      <h3 id="controlled-sources">制御電源</h3>
+      <p>
+        電源の値の式に回路の電圧・電流を書くと、制御電源（従属電源）になります。記号が菱形に変わります。
+        専用の部品はありません。
+      </p>
+      <table>
+        <thead>
+          <tr><th>例</th><th>意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>{10*V(in)}</code></td><td>ノード in の電圧の 10 倍（電圧制御電圧源・電圧制御電流源）</td></tr>
+          <tr><td><code>{2*V(a, b)}</code></td><td>ノード a と b の差の電圧の 2 倍</td></tr>
+          <tr><td><code>{100*I(R1)}</code></td><td>R1 を流れる電流の 100 倍（電流制御電圧源・電流制御電流源）</td></tr>
+          <tr><td><code>{1 + gm*V(in)}</code></td><td>定数と組み合わせてもよい（定数の部分は独立電源として働く）</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>ノードはネットラベルの名前で書きます（自動で付く <code>N001</code> のような名前は書けません）。</li>
+        <li>
+          <code>I(...)</code> で参照できるのは2端子の部品です。電流の向きは、正極から部品の中を通って負極へ。
+          Sパラブロック・伝送線路・サブサーキットの電流は、0 V の電圧源を直列に入れて <code>I(その電圧源)</code> で参照します。
+        </li>
+        <li>係数には <code>f</code>・<code>s</code>・変数を使えます。<code>{A0/(1+s/(2*pi*fp))*V(in)}</code> のように、周波数で変わる利得も書けます。</li>
+        <li><code>V(a)*V(b)</code> のような掛け算、<code>V(...)</code> で割る、関数に入れる（<code>abs(V(a))</code> など）は書けません。回路が線形でなくなるためです。</li>
+        <li>参照できるのは、同じ回路図の中の名前だけです（サブサーキットの中から親のノードは指せません）。</li>
+        <li>名前を変えると、電源の値の中の参照も追随します。</li>
+        <li>Sパラメータ解析では、定数の部分は消え、電圧・電流に比例する部分は回路の一部として残ります。</li>
+        <li>使い方は examples の 11〜13 を見てください。</li>
+      </ul>
+
+      <h3 id="file-values">CSV ファイルの値</h3>
+      <p>インピーダンスと電源は、CSV ファイルの値も使えます。</p>
+      <table>
+        <thead>
+          <tr><th>書き方</th><th>ファイルの中身</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>FILE=data.csv FMT=RI</code></td><td>1列目が周波数 [Hz]、続けて実部・虚部</td></tr>
+          <tr><td><code>FILE=data.csv FMT=MA</code></td><td>1列目が周波数 [Hz]、続けて振幅・位相 [度]</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li><code>FMT=</code> は省略できません。</li>
+        <li>数値で始まらない行（見出しやコメント）は読み飛ばします。</li>
+        <li>区切りはカンマ・タブ・セミコロン・空白です。</li>
+        <li>データが2列（周波数, 数値）なら、値は実数として読みます。3列以上のときは2列目と3列目を使います。</li>
+        <li>データの間は線形補間します。データの範囲外の周波数はエラーになります（外挿はしません）。</li>
+        <li>ファイルの場所は回路図からの相対パスで保存されます（<a href="#files">ファイルと書き出し</a>）。</li>
+        <li>プロパティウィンドウの「形式」の右にある目のボタンで、ファイルの中身を見られます。回路図の部品の右クリック →「CSVファイルの内容を表示 ...」でも開けます。</li>
+      </ul>
+
+      <h3 id="names">名前の規則</h3>
+      <ul>
+        <li>ノード名（ネットラベル）・部品の ID・変数名は、大文字・小文字を区別しません。</li>
+        <li>使える文字は、文字（かな・漢字・英字）・数字・<code>_</code> です。先頭は文字か <code>_</code> にします。</li>
+        <li>ノード名だけは数字で始めてもよく、2文字目から <code>+</code> と <code>-</code> も使えます（例： <code>in+</code>、<code>out-</code>）。</li>
+        <li>空白は使えません。<code>_</code> に置き換えます。</li>
+        <li>全角の英数字（<code>Ｖｉｎ</code>）は、半角（<code>Vin</code>）と別の名前として扱われます。見分けにくいので警告が出ます。</li>
+      </ul>
+    </section>
+
+    <section id="directives">
+      <h2>解析設定と変数</h2>
+      <p>
+        解析設定（<kbd>A</kbd>）と変数定義（<kbd>D</kbd>）は、回路図に置くディレクティブです。
+        ダブルクリックすると設定ウィンドウが開きます。
+      </p>
+      <table id="directive-list">
+        <thead>
+          <tr><th>ディレクティブ</th><th>例</th><th>意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>.ac</code></td><td><code>.ac dec 100 10k 100M</code></td><td>AC 解析（周波数特性）</td></tr>
+          <tr><td><code>.sp</code></td><td><code>.sp dec 100 1M 1G</code></td><td>Sパラメータ解析。書き方は <code>.ac</code> と同じ。回路図にポートが1つ以上要る。後ろに <code>bal(1,2)</code> などでポートの割り当てを書ける（<a href="#mixed-mode">ミックスドモードSパラメータ</a>）</td></tr>
+          <tr><td><code>.param</code></td><td><code>.param Lp=1u Cp={1/((2*pi*10.7M)^2*Lp)}</code></td><td>変数。式も書ける</td></tr>
+          <tr><td><code>.tune</code></td><td><code>.tune Rload=50</code></td><td>チューニングで動かす変数（<a href="#tuning">チューニング</a>）</td></tr>
+        </tbody>
+      </table>
+
+      <h3 id="sweep">周波数の指定</h3>
+      <table>
+        <thead>
+          <tr><th>例</th><th>意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>.ac dec 100 10k 100M</code></td><td>10 kHz〜100 MHz を、10 倍ごとに 100 点</td></tr>
+          <tr><td><code>.ac oct 20 1k 1M</code></td><td>1 kHz〜1 MHz を、2 倍ごとに 20 点</td></tr>
+          <tr><td><code>.ac lin 401 9.2M 12.2M</code></td><td>9.2 MHz〜12.2 MHz を、全体で 401 点（線形間隔）</td></tr>
+          <tr><td><code>.ac list 1k 10k 100k</code></td><td>並べた周波数だけ（小さい順に並べ替える）</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>解析設定の初期値は <code>.ac dec 100 10k 100M</code> です。</li>
+        <li>点数と周波数は数値で書きます。式や変数は使えません。</li>
+        <li>周波数は正の値です。終了が開始より小さいとエラーになります。</li>
+        <li>設定ウィンドウでは、読み取った周波数（「= 10 kHz」など）が欄の右に出ます。<code>1m</code>（1 mHz）の書き間違いに気づけます。</li>
+      </ul>
+
+      <h3 id="variables">変数</h3>
+      <ul>
+        <li><code>.param 名前=値 名前=値 …</code> のように、1つに何個でも並べられます。<code>=</code> の前後に空白を入れません。</li>
+        <li><code>.param</code> の値は数値か <code>{式}</code> です。複素数や、<code>f</code> などを使った式（周波数に依存する値）も書けます。</li>
+        <li>変数は、置いた順に関係なく参照できます。循環する参照はエラーです。</li>
+        <li>同じ名前を2回宣言するとエラーです（<code>.param</code> と <code>.tune</code> の間でも）。</li>
+        <li>
+          <code>.tune</code> の値は実数の定数です。複素数をチューニング対象にしたいときは、実部と虚部や、絶対値と位相を別々に定義して、<code>.param</code> で組み合わせます（<code>.tune XRe=10 XIm=5</code> と <code>.param X={XRe+j*XIm}</code>）。
+        </li>
+        <li>サブサーキット回路図には <code>.param</code> だけが書けます（<code>.ac</code>・<code>.sp</code>・<code>.tune</code> は書けません）。</li>
+      </ul>
+
+      <h3 id="directive-dialog">ディレクティブの設定ウィンドウ</h3>
+      <ul>
+        <li>タブは「解析設定」と「変数定義」があります。</li>
+        <li>「有効」を OFF にすると、その解析設定・変数定義は解析に使われません。ディレクティブ本文の先頭に <code>*</code> を付けるのと同じです。</li>
+        <li><code>;</code> から行末まではコメントとして扱いますが、フォームを触って本文が組み直されると、そのコメントは消えます。</li>
+        <li>
+          「解析設定」で <code>.sp</code> を選ぶと、「ミックスドモードSパラメータを計算する」が出ます。これをONにして「ポートの割り当てを設定 ...」を押すと、別のウィンドウの Logical port の表で<a href="#mixed-mode">ポートの割り当て</a>を決められます。
+          行の順が Logical port の番号で、上下のボタンで入れ替えます。書かなかったポートは、表の末尾に灰色の「自動」の行として出ます。
+          表の誤りは、診断ペインと同じ文言で、表の下とチェックの下に出ます。
+        </li>
+        <li>チェックを付けたまま表の行を全部消すと、ミックスドモードSパラメータは計算しません（注意が出ます）。本文にポートの割り当てが残らないので、開き直すとチェックは外れています。</li>
+      </ul>
+
+      <h3 id="running">解析の実行</h3>
+      <ul>
+        <li><kbd>F5</kbd>、ツールバーの「実行」、「解析」→「実行」で解析します。実行中にもう一度 <kbd>F5</kbd> を押すと中止します。</li>
+        <li>有効な解析設定をすべて実行します。結果が2つ以上あるときは、画面上部の「表示対象の解析データ」で切り替えできます（解析設定のディレクティブが表示されます）。</li>
+        <li>
+          実行した後に、部品・ワイヤ・ディレクティブを変えると（接続を変えずに位置を動かしただけでも）、ステータスバーに「結果が古い（再実行してください）」と出ます。
+          参照しているファイルが書き換わったときも出ます。グラフ・コメント・図形を変えても出ません。
+        </li>
+        <li>サブサーキット回路図は、それだけでは解析できません（動作テスト用の回路を<a href="#testbench">テストベンチ</a>で作れます）。</li>
+        <li>解析結果のデータ量が大きくなりそうなとき（目安 256 MiB）は、実行する前に確認します。1 GiB を超える可能性のある解析は実行しません。</li>
+      </ul>
+
+      <h3 id="frequency-range">外部データの周波数範囲</h3>
+      <p>
+        「解析」→「外部データの周波数範囲 ...」で、参照している外部データ（CSV や Touchstone）の周波数範囲と、解析設定（<code>.ac</code>・<code>.sp</code>）の周波数を並べて見られます。
+        データの範囲外の周波数は解けない（エラーFS0705が発生）ため、複数のデータを使うときの周波数範囲の確認に便利です。
+      </p>
+      <figure>
+        <svg class="fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" role="img" aria-label="外部データの周波数範囲のウィンドウ">
+          <rect class="fig-pane" x="0.5" y="0.5" width="530" height="326" />
+          <path class="fig-leader" d="M 0.5 28.5 H 530.5" />
+          <text x="12" y="14">外部データの周波数範囲</text>
+          <text class="fig-strong" x="12" y="44">回路図1.fsim</text>
+          <text class="fig-small" x="518" y="44" text-anchor="end">行の単位: ◉ ファイルごと ○ 素子ごと</text>
+          <text class="fig-small" x="165" y="62" text-anchor="middle">10Hz</text>
+          <text class="fig-small" x="211" y="62" text-anchor="middle">1kHz</text>
+          <text class="fig-small" x="257" y="62" text-anchor="middle">100kHz</text>
+          <text class="fig-small" x="303" y="62" text-anchor="middle">10MHz</text>
+          <text class="fig-small" x="349" y="62" text-anchor="middle">1GHz</text>
+          <path class="fig-leader" d="M 165.5 70 V 76 M 188.5 70 V 76 M 211.5 70 V 76 M 234.5 70 V 76 M 257.5 70 V 76 M 280.5 70 V 76 M 303.5 70 V 76 M 326.5 70 V 76 M 349.5 70 V 76 M 151 76.5 H 368.7" />
+          <rect class="fig-paper" x="0.5" y="80.5" width="530" height="200" />
+          <path class="fig-grid" d="M 188.5 81 V 280 M 211.5 81 V 280 M 234.5 81 V 280 M 257.5 81 V 280 M 280.5 81 V 280 M 303.5 81 V 280 M 326.5 81 V 280" />
+          <rect class="fig-selected" x="1" y="82" width="529" height="22" />
+          <text class="fig-small fig-warn" x="8" y="93">⚠</text>
+          <text class="fig-small fig-code fig-strong" x="22" y="93">.ac dec 100 10 1G</text>
+          <rect class="fig-coverage" x="257" y="84" width="46" height="18" />
+          <rect class="fig-band-sweep" x="165" y="89" width="184" height="8" rx="2" />
+          <rect class="fig-band-out" x="165" y="89" width="92" height="8" rx="2" />
+          <rect class="fig-band-out" x="303" y="89" width="46" height="8" rx="2" />
+          <text class="fig-small" x="372" y="93">10Hz 〜 1GHz, 801点</text>
+          <text class="fig-icon" x="508" y="94" font-size="12">&#xE73F;</text>
+          <text class="fig-small fig-warn" x="8" y="117">⚠</text>
+          <text class="fig-small fig-code" x="22" y="117">.sp dec 100 1Meg 5G</text>
+          <rect class="fig-coverage" x="257" y="108" width="46" height="18" />
+          <rect class="fig-band-sweep" x="280" y="113" width="85.1" height="8" rx="2" />
+          <rect class="fig-band-out" x="303" y="113" width="62.1" height="8" rx="2" />
+          <text class="fig-small" x="372" y="117">1MHz 〜 5GHz, 371点</text>
+          <text class="fig-icon" x="508" y="118" font-size="12">&#xE73F;</text>
+          <text class="fig-small" x="8" y="141">両側が範囲外（データ範囲は 100kHz 〜 10MHz、不足: 2件）</text>
+          <path class="fig-leader" d="M 8 154.5 H 522" />
+          <text class="fig-small fig-warn" x="8" y="166">⚠</text>
+          <text x="22" y="166">GRM155…25degC.csv</text>
+          <text class="fig-small" x="22" y="185">Z1, Z5</text>
+          <rect class="fig-band-data" x="211" y="162" width="138" height="8" rx="2" />
+          <text class="fig-small" x="372" y="166">1kHz 〜 1GHz, 301点</text>
+          <text class="fig-small fig-warn" x="372" y="185">下が不足</text>
+          <text class="fig-small fig-warn" x="8" y="204">⚠</text>
+          <text x="22" y="204">near-edge.csv</text>
+          <text class="fig-small" x="22" y="223">Z4</text>
+          <rect class="fig-band-data" x="257" y="200" width="46" height="8" rx="2" />
+          <text class="fig-small" x="372" y="204">100.3kHz 〜 10MHz, 3点</text>
+          <text class="fig-small fig-warn" x="372" y="223">両側が不足</text>
+          <text x="22" y="242">source.csv</text>
+          <text class="fig-small" x="22" y="261">V1</text>
+          <rect class="fig-band-data" x="165" y="238" width="184" height="8" rx="2" />
+          <text class="fig-small" x="372" y="242">10Hz 〜 1GHz, 81点</text>
+          <path class="fig-edge" d="M 165.5 82 V 279 M 349.5 82 V 279" />
+          <rect class="fig-band-sweep" x="8" y="292" width="16" height="8" rx="2" />
+          <text class="fig-small" x="28" y="296">解析の範囲</text>
+          <rect class="fig-band-data" x="104" y="292" width="16" height="8" rx="2" />
+          <text class="fig-small" x="124" y="296">データの範囲</text>
+          <rect class="fig-band-out" x="212" y="292" width="16" height="8" rx="2" />
+          <text class="fig-small" x="232" y="296">データが無く解けない区間</text>
+          <rect class="fig-coverage" x="8" y="307" width="16" height="14" />
+          <text class="fig-small" x="28" y="314">全データが揃う範囲</text>
+          <path class="fig-edge" d="M 156.5 307 V 321" />
+          <text class="fig-small" x="162" y="314">選んだ解析の両端</text>
+          <path class="fig-leader" d="M 531 93 H 546 M 525 117 H 546 M 531 141 H 546 M 531 166 H 546 M 531 185 H 546 M 531 305 H 546" />
+          <text x="550" y="93">解析設定の行</text>
+          <text x="550" y="117">縮小のボタン</text>
+          <text x="550" y="141">選んだ解析の判定</text>
+          <text x="550" y="166">データの行</text>
+          <text x="550" y="185">足りない側</text>
+          <text x="550" y="305">凡例</text>
+        </svg>
+        <figcaption>外部データの周波数範囲のウィンドウ。選択中の解析設定（上の段の太字の行）のその両端から黒い縦線が下りています。</figcaption>
+      </figure>
+      <ul>
+        <li>このウィンドウは開いたまま回路図を直せます。実行しなくても、編集するたびに中身が連動します。</li>
+        <li>
+          帯の色は、灰が解析の範囲、青がデータの範囲、橙がデータが無くて解けない区間、薄い緑が全データの揃う範囲です。
+          縦の濃い線は、選んだ解析の両端です。ウィンドウの下にも凡例があります。
+        </li>
+        <li>
+          上の段は解析設定ごとの行で、右に範囲と点数が出ます。行をクリックするか <kbd>↑</kbd> <kbd>↓</kbd> で1行を選ぶと、縦線・判定・データの行の不足内容がその解析に合わせて変わり、回路図でその解析設定が選ばれます。
+          行をダブルクリックすると、その解析設定の<a href="#directive-dialog">ディレクティブの設定ウィンドウ</a>が開きます。
+          解析設定が多いときは、この段の中でスクロールします。
+        </li>
+        <li>
+          データからはみ出している解析設定の行には、右端にボタンが出ます（図の「縮小のボタン」）。
+          これを押すか、行を右クリック →「全データが揃う範囲に縮小 ...」で、確認の後に解析設定の周波数範囲を全データが揃う範囲まで縮めます。
+          <ul>
+            <li>削るのは、はみ出した側の端だけです。範囲を広げることはしません。点列（<code>.ac list ...</code>）は、範囲外の点を消します。</li>
+            <li>現在の周波数範囲がデータの範囲と重ならないときは「全データが揃う範囲に置き換え ...」になり、全データが揃う範囲そのものに置き換えます。</li>
+            <li>
+              新しい端は有効6桁で、範囲の内側に入る向きに丸めます（1.0012345 MHz から始まるデータなら <code>1.00124M</code>）。
+              書き換えるのは開始と終了の周波数だけで、点数・行末のコメント・ポートの割り当ては書いたまま残ります。
+            </li>
+            <li>ここでの変更は、回路図上での <kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻せます。</li>
+            <li>はみ出していない行、全データが揃う範囲が無い行、範囲が狭すぎて丸めると開始と終了が逆になる行では、右クリックの項目を選べません。</li>
+          </ul>
+        </li>
+        <li>
+          上の段の下の1行が、選んだ解析の判定です（「全点がデータ範囲内」、「下側が範囲外」など。範囲外ならデータの揃う範囲と、足りないファイルの数）。
+          ほかの解析の判定は、行にマウスを乗せると出ます。データが足りない解析の行には警告のアイコンが付きます。
+        </li>
+        <li>
+          下の段はデータの行です。「行の単位」で、ファイルごと（同じファイルを読む素子を1行にまとめる）と素子ごと（CSV の読み方 RI・MA も出る）を切り替えます。
+          行をクリックすると、そのデータを参照している素子を回路図で選びます。
+          行をダブルクリックするか、CSV の行は右クリック →「CSVファイルの内容を表示 ...」、Touchstone の行は右クリック →「Touchstoneファイルの内容を表示 ...」で、ファイルの中身を見られます。
+          行は名前の順に並んでいます。
+        </li>
+        <li>選んだ解析に対してデータが足りない行には、警告のアイコンと、足りない側（下が不足・上が不足・両側が不足）が表示されます。</li>
+        <li>Sパラメータ解析を選ぶと、電源だけが読むデータの行は薄くなり、「Sパラ解析では使わない」と出ます。Sパラメータ解析は独立電源を外して解くので、そのデータは解析範囲に影響しません。</li>
+        <li>読めないファイルも表示して、理由を表示します。</li>
+        <li>長いファイル名は中ほどを「…」で省略します。マウスを乗せると全部出ます。</li>
+      </ul>
+    </section>
+
+    <section id="plots">
+      <h2>グラフ</h2>
+
+      <h3 id="plot-kinds">グラフの種類と置き方</h3>
+      <ul>
+        <li>パレットの「直交グラフ」「スミスチャート」「極座標グラフ」を押し、回路図をクリックして置きます。種類は後から変えられません。</li>
+        <li>グラフを1つだけ選択すると四隅につまみが出て、ドラッグで大きさを変えられます。</li>
+        <li>直交グラフの既定値は、左の Y 軸が dB、右の Y 軸が位相です。同じ式のトレースを左と右の軸で表示すれば、ボード線図になります。</li>
+        <li>
+          グラフが1枚も無いまま解析すると、回路の下（縦長の回路なら右）にグラフが自動で置かれます。AC 解析なら最初に置いたネットラベルのノードの電圧のボード線図、
+          Sパラメータ解析なら <code>S(1,1)</code> などのスミスチャートと <code>S(2,1)</code> などのボード線図です。
+          ポートの割り当てを書いた <code>.sp</code> なら、Logical port 1 の反射（<code>Sdd(1,1)</code> など）と、Logical port 1 から 2 への透過（<code>Sdd(2,1)</code> など）です。
+        </li>
+      </ul>
+
+      <h3 id="plot-settings">グラフ設定</h3>
+      <ul>
+        <li>グラフをダブルクリックするか、選んで <kbd>Enter</kbd> / <kbd>F2</kbd>、または右クリック →「グラフ設定 ...」で開きます。</li>
+        <li>開いたまま回路図を操作できます。別のグラフを選ぶと、そのグラフの設定に切り替わります。</li>
+        <li>長い式を書くときは、ウィンドウの左右の端をドラッグして幅を広げられます。高さは中身に合わせて決まります。</li>
+        <li>直交グラフは「トレースの設定」「軸の設定」「カーソル」の3つのタブです。スミスチャートと極座標グラフは1画面にまとまっています。</li>
+        <li>式や数値の欄は、<kbd>Enter</kbd> を押すか、ほかの欄へ移ったときに反映します。選ぶ項目は、選んだときに反映します。</li>
+      </ul>
+
+      <h3 id="traces">トレースの足し方</h3>
+      <table>
+        <thead>
+          <tr><th>ボタン</th><th>働き</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>追加</td><td>雛形を1行足します（<code>V(名前を付けたノード)</code>、Sパラメータ解析なら <code>S(1,1)</code> など）。足した行の式を自分で書き換えて使います。名前を付けたノードが無いときは、空の行を足します</td></tr>
+          <tr><td>データから追加</td><td>解析後の結果内にあるデータから選びます。複数個選ぶと、それぞれ別のトレースになります。</td></tr>
+          <tr><td>回路から追加</td><td>回路図のワイヤ（電圧）や部品（電流）をクリックして足します。Sパラメータ解析ではポートをクリックします。もう一度押すか、<kbd>Esc</kbd>・右クリックで終わります</td></tr>
+        </tbody>
+      </table>
+      <p>トレースの行では、色と線種（8色、実線・破線・点線・一点鎖線）、式、左右どちらの軸に載せるかを選びます。</p>
+
+      <h3 id="trace-expressions">トレース式</h3>
+      <p>トレース式は <code>{}</code> で囲まずに書きます。名前・演算子・関数は、部品の値の式と同じものが使えます（<a href="#values">値の書き方</a>）。</p>
+      <table>
+        <thead>
+          <tr><th>例</th><th>意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>V(out)</code></td><td>ノード電圧</td></tr>
+          <tr><td><code>V(a, b)</code></td><td>差電圧 V(a) − V(b) の省略表記</td></tr>
+          <tr><td><code>I(R1)</code></td><td>2端子の部品 R1 の電流。正の向きは、正極から部品の中を通って負極へ</td></tr>
+          <tr><td><code>I(X1, in)</code></td><td>サブサーキット X1 の端子の電流（端子名で指す）</td></tr>
+          <tr><td><code>I(S1, 2)</code></td><td>Sパラブロック S1 のポート1の電流（1 から数える）。基準端子は <code>I(S1, ref)</code></td></tr>
+          <tr><td><code>I(T1, 2)</code></td><td>伝送線路 T1 の出力ポートの電流（1 が入力側、2 が出力側）。スタブは <code>I(T2)</code></td></tr>
+          <tr><td><code>I(Q1, com)</code></td><td>スイッチ Q1 の共通端子の電流。接点は番号で <code>I(Q1, 2)</code></td></tr>
+          <tr><td><code>V(X1.mid)</code></td><td>サブサーキット X1 の内部のノード。内部の部品の電流は <code>I(X1.R1)</code></td></tr>
+          <tr><td><code>S(2, 1)</code></td><td>Sパラメータ（ポート1から入ってポート2へ出る）= S<sub>21</sub> </td></tr>
+          <tr><td><code>Zin(1)</code></td><td>ポート1から見た入力インピーダンス（ほかのポートはそれぞれの Z₀ で終端）</td></tr>
+          <tr><td><code>Sdd(2, 1)</code></td><td>ミックスドモードSパラメータ（Logical port 1 から差動で入って、Logical port 2 へ差動で出る。<a href="#mixed-mode">ミックスドモードSパラメータ</a>）</td></tr>
+          <tr><td><code>db(V(out)/V(in))</code></td><td>利得 [dB]</td></tr>
+          <tr><td><code>re(V(a, b)*conj(I(R1)))/2</code></td><td>R1 の有効電力（値は振幅なので 2 で割る）</td></tr>
+          <tr><td><code>1/(w*mag(V(out)/I(C1)))</code></td><td>C1 の容量</td></tr>
+          <tr><td><code>1/(1+s*R*C)</code></td><td>理論式。<code>.param</code> と <code>.tune</code> の変数も使える（チューニング中はつまみの値に追随する）</td></tr>
+        </tbody>
+      </table>
+      <figure>
+        <svg class="fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 230" role="img" aria-label="電流の正の向き">
+          <text class="fig-strong" x="20" y="16">2端子の部品</text>
+          <text x="60" y="66" text-anchor="middle">正極</text>
+          <text class="fig-code" x="160" y="66" text-anchor="middle">R1</text>
+          <text x="260" y="66" text-anchor="middle">負極</text>
+          <path class="fig-line" d="M 60 100 H 120 M 200 100 H 260" />
+          <rect class="fig-paper" x="120.5" y="88.5" width="80" height="24" />
+          <circle class="fig-arrow" cx="60" cy="100" r="3" />
+          <circle class="fig-arrow" cx="260" cy="100" r="3" />
+          <path class="fig-line" d="M 90 136 H 222" />
+          <polygon class="fig-arrow" points="232,136 220,130 220,142" />
+          <text class="fig-code" x="160" y="156" text-anchor="middle">I(R1)</text>
+          <text class="fig-small" x="20" y="194">正極は置いたときの左端。Ctrl+R で回すと上→右→下へ移り、</text>
+          <text class="fig-small" x="20" y="212">Ctrl+E（左右反転）では左右が入れ替わる</text>
+          <text class="fig-strong" x="400" y="16">多端子の部品（Sパラブロック）</text>
+          <path class="fig-line" d="M 440 90 H 500 M 600 90 H 660 M 550 150 V 196" />
+          <rect class="fig-pane" x="500.5" y="50.5" width="100" height="100" />
+          <text x="550.5" y="76" text-anchor="middle">S1</text>
+          <text x="508" y="90">1</text>
+          <text x="593" y="90" text-anchor="end">2</text>
+          <text x="550.5" y="136" text-anchor="middle">Ref</text>
+          <polygon class="fig-arrow" points="492,90 480,84 480,96" />
+          <polygon class="fig-arrow" points="608,90 620,84 620,96" />
+          <polygon class="fig-arrow" points="550,158 544,170 556,170" />
+          <text class="fig-code" x="466" y="68" text-anchor="middle">I(S1,1)</text>
+          <text class="fig-code" x="634" y="68" text-anchor="middle">I(S1,2)</text>
+          <text class="fig-code" x="562" y="182">I(S1,ref)</text>
+          <text class="fig-code" x="550" y="214" text-anchor="middle">I(S1,1) + I(S1,2) + I(S1,ref) = 0</text>
+        </svg>
+        <figcaption>電流の正の向き。2端子の部品は正極から部品の中を通って負極へ、多端子の部品はどの端子も部品へ入る向きが正です。</figcaption>
+      </figure>
+      <ul>
+        <li>
+          抵抗・キャパシタ・インダクタ・インピーダンスの正極は、置いたときの左端です。<kbd>Ctrl</kbd>+<kbd>R</kbd> で回すと上→右→下へ移り、<kbd>Ctrl</kbd>+<kbd>E</kbd>（左右反転）では左右が入れ替わります。
+          画面に印は無いので、その部品の電流を描いているグラフを選び、引き出し線の矢印（正極の側に出ます）で確かめます。電圧源は + の印の側、電流源は矢印の根元の側、ポートは五角形の尖った側が正極です。
+        </li>
+        <li>端子や部品の電流は、どれも部品へ入る向きが正です。Sパラブロックなら <code>I(S1,1)+I(S1,2)+I(S1,ref)</code> は 0 になります。</li>
+        <li><code>V(out-in)</code> は差電圧ではなく、<code>out-in</code> というノードの電圧という意味になります。差電圧を表したい場合は <code>V(out, in)</code> と書きます。</li>
+        <li>ノードはネットラベルで名前を付けてから使います。<code>N001</code> などの自動で付く名前は、配線を変えると別のノードに変わることがあるため指定できません（ミス防止のため）。</li>
+        <li>
+          <code>.ac</code> の結果では <code>S</code> と <code>Zin</code> を、<code>.sp</code> の結果では <code>V</code> と <code>I</code> をグラフに描けません。
+          その行は「S パラメータは .sp の結果でのみ表示」などの注意が表示されます。
+          ポートの割り当てを書いていない <code>.sp</code> の結果での <code>Sdd</code> なども同じです。
+        </li>
+        <li>トレース式の誤りは、トレースの欄に赤色で表示されます。存在しないノード・部品・変数の誤りは、解析した後に出ます。いずれも診断の一覧には出ません。</li>
+        <li>
+          グラフの中に <code>No traces to plot</code> と出るのは、描けるトレース式が1本も無いときです（式が空か誤り、またはこの結果やこの図では描けない式しかないなど）。理由はトレースの欄の各行に出ます。
+          解析する前と、解析に失敗したときは <code>No analysis result</code> と出ます。
+        </li>
+      </ul>
+
+      <h3 id="axes">軸の設定</h3>
+      <p>直交グラフの Y 軸は左右の2本です。それぞれに表示方法と目盛りを選びます。</p>
+      <table id="trace-displays">
+        <thead>
+          <tr><th>式の関数</th><th>表示方法</th><th>意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>db</code></td><td>dB</td><td>20·log<sub>10</sub>|z|</td></tr>
+          <tr><td><code>mag</code></td><td>大きさ</td><td>|z|</td></tr>
+          <tr><td><code>deg</code></td><td>位相 [deg]</td><td>偏角（度）</td></tr>
+          <tr><td><code>re</code></td><td>実部</td><td></td></tr>
+          <tr><td><code>im</code></td><td>虚部</td><td></td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>
+          トレース式の値が複素数なら、軸の表示方法に従って自動的に実数にして描きます。式に <code>db(...)</code> などを書いて実数にしたトレースは、
+          軸の表示方法に関係なく、そのまま描きます（その行には印が付きます）。
+        </li>
+        <li>定数もそのまま描きます。例えば、dB の軸に <code>-3</code> というトレース式があると −3 dB に線が出ます。</li>
+        <li>目盛りは「自動」「対数」「線形」です。Y 軸の自動は、大きさなら対数、それ以外は線形になります。X 軸の自動は、解析の設定が <code>lin</code> なら線形、それ以外なら対数です。</li>
+        <li>範囲の「自動」を外すと、最小と最大を入力できます。線形の目盛りなら刻みも入力できます。誤りがあると欄の下に赤で理由が出て、その項目だけ自動で描きます。</li>
+        <li>X 軸の最小と最大を自分で入力する場合で、Y 軸が自動のとき、Y 軸の範囲は、その X の範囲に見えている部分から決まります。</li>
+        <li>右の Y 軸は、載っているトレースがあるときだけ描きます。</li>
+      </ul>
+
+      <h3 id="cursors">カーソル</h3>
+      <ul>
+        <li>カーソルは1枚のグラフに4本まで置けます。グラフを右クリック →「ここにカーソルを追加」か、グラフ設定の「カーソル」の「追加」で置きます。</li>
+        <li>グラフを1枚だけ選んでいるときに、カーソルをドラッグすると直接動かせます。直交グラフでは左右に、スミスチャートと極座標グラフでは曲線に沿って動きます。グラフ設定で周波数を入力しても動かせます。</li>
+        <li>消すには、カーソルを右クリック →「カーソル n を削除」か、グラフ設定の × を押します。</li>
+        <li>
+          カーソル位置の値は、グラフの下に表示されます。値はカーソルの周波数で解析し直したもので、点の間を補間したものではありません。
+          スミスチャートは <code>R + jX Ω</code>、極座標グラフは「大きさ ∠ 角度」で出ます。解析の周波数範囲の外は <code>out of range</code> です。
+        </li>
+        <li>カーソルの表は、画像の書き出しにも載ります。カーソル同士の差を表示する機能はありません。</li>
+      </ul>
+
+      <h3 id="smith-polar">スミスチャートと極座標グラフ</h3>
+      <ul>
+        <li>式の複素数の値を、そのまま複素数平面に描画します。<code>db(...)</code> のように実数を返すトレース式は描画できません（行に「無効」と出ます）。</li>
+        <li>
+          スミスチャートは、値を反射係数 Γ として描きます。トレース式は <code>Zin(1)</code> のようなインピーダンスではなく、<code>S(1,1)</code> のようにしてください。
+          インピーダンスを複素数平面で見たいときは、極座標グラフを使ってください。
+        </li>
+        <li>曲線の上に、周波数の目印の点が出ます（「周波数マーカー」で 0〜10 個。既定は 4 個）。</li>
+        <li>
+          スミスチャートの Z0 は、載っているトレースの基準インピーダンスがすべて同じときに表示します（<code>S(1,1)</code> ならポート1の Z₀、<code>Sdd(1,1)</code> なら 2·Z₀、<code>Scc(1,1)</code> なら Z₀/2）。
+          カーソルのインピーダンスも、この Z0 で読みます。トレースが無いときは、すべてのポートが同じ値なら表示します。
+          <code>Zin(1)/50</code> のように自分で割った式は基準インピーダンスを持たないので、載っていると Z0 は「—」になり、カーソルは正規化した値で読みます。
+        </li>
+        <li>極座標グラフは半径の最大と刻みを決められます。</li>
+      </ul>
+
+      <h3 id="leader-lines">引き出し線と凡例</h3>
+      <ul>
+        <li>グラフを1枚だけ選んでいる間、トレースが測っているノードや部品へ線が出ます。電流には、部品へ入る向きの矢印が付きます。<code>S</code>、<code>Zin</code>、ミックスドモードSパラメータ（<code>Sdd</code> など）には出ません。</li>
+        <li>引き出し線は、設定の「グラフの引き出し線を表示する」で消せます。画像の書き出しには載りません。</li>
+        <li>凡例は、グラフの上に式のまま出ます。入りきらないときは出ません。</li>
+      </ul>
+    </section>
+
+    <section id="tuning">
+      <h2>チューニング</h2>
+      <p>
+        <code>.tune</code> で宣言した変数を、つまみで動かしながら結果を見る機能です。
+        ツールバーの「チューニング」のボタン、「解析」→「チューニング ...」、または <code>.tune</code> を右クリック →「チューニング ...」で開きます。
+        このウィンドウは開いたまま回路図を操作できます。
+      </p>
+      <figure>
+        <svg class="fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 395" role="img" aria-label="チューニングのウィンドウ">
+          <rect class="fig-pane" x="0.5" y="0.5" width="470" height="360" />
+          <path class="fig-leader" d="M 0.5 28.5 H 470.5" />
+          <text x="12" y="14">チューニング</text>
+          <text class="fig-strong" x="12" y="78">現在</text>
+          <text class="fig-strong" x="12" y="108">最大</text>
+          <text class="fig-strong" x="12" y="258">最小</text>
+          <text class="fig-code fig-strong" x="122" y="44" text-anchor="middle">Rload</text>
+          <text x="162" y="44" text-anchor="middle">↺</text>
+          <text class="fig-code fig-strong" x="242" y="44" text-anchor="middle">Cp</text>
+          <text x="282" y="44" text-anchor="middle">↺</text>
+          <text class="fig-code fig-strong" x="362" y="44" text-anchor="middle">Lp</text>
+          <text x="402" y="44" text-anchor="middle">↺</text>
+          <rect class="fig-paper" x="90.5" y="67.5" width="80" height="22" />
+          <text class="fig-code" x="130.5" y="78.5" text-anchor="middle">50</text>
+          <rect class="fig-paper" x="90.5" y="97.5" width="80" height="22" />
+          <text class="fig-code" x="130.5" y="108.5" text-anchor="middle">500</text>
+          <rect class="fig-paper" x="210.5" y="67.5" width="80" height="22" />
+          <text class="fig-code" x="250.5" y="78.5" text-anchor="middle">1.2n</text>
+          <rect class="fig-paper" x="210.5" y="97.5" width="80" height="22" />
+          <text class="fig-code" x="250.5" y="108.5" text-anchor="middle">12n</text>
+          <rect class="fig-paper" x="330.5" y="67.5" width="80" height="22" />
+          <text class="fig-code" x="370.5" y="78.5" text-anchor="middle">3.3u</text>
+          <rect class="fig-paper" x="330.5" y="97.5" width="80" height="22" />
+          <text class="fig-code" x="370.5" y="108.5" text-anchor="middle">33u</text>
+          <path class="fig-track" d="M 130.5 134 V 236 M 250.5 134 V 236 M 370.5 134 V 236" />
+          <path class="fig-line" d="M 138 185 H 146 M 258 185 H 266 M 378 185 H 386" />
+          <circle class="fig-paper" cx="130.5" cy="185" r="7" />
+          <circle class="fig-paper" cx="250.5" cy="160" r="7" />
+          <circle class="fig-paper" cx="370.5" cy="185" r="7" />
+          <rect class="fig-paper" x="90.5" y="247.5" width="80" height="22" />
+          <text class="fig-code" x="130.5" y="258.5" text-anchor="middle">5</text>
+          <rect class="fig-paper" x="210.5" y="247.5" width="80" height="22" />
+          <text class="fig-code" x="250.5" y="258.5" text-anchor="middle">120p</text>
+          <rect class="fig-paper" x="330.5" y="247.5" width="80" height="22" />
+          <text class="fig-code" x="370.5" y="258.5" text-anchor="middle">330n</text>
+          <rect class="fig-paper" x="106.5" y="280.5" width="10" height="10" />
+          <text x="122" y="286">対数</text>
+          <rect class="fig-paper" x="226.5" y="280.5" width="10" height="10" />
+          <text x="242" y="286">対数</text>
+          <rect class="fig-paper" x="346.5" y="280.5" width="10" height="10" />
+          <text x="362" y="286">対数</text>
+          <rect class="fig-optional" x="70" y="302" width="390" height="10" />
+          <rect class="fig-paper" x="10.5" y="320.5" width="34" height="28" />
+          <text x="27.5" y="334.5" text-anchor="middle">↺</text>
+          <rect class="fig-paper" x="52.5" y="320.5" width="210" height="28" />
+          <text x="157.5" y="334.5" text-anchor="middle">現在の値を .tune に書き戻す</text>
+          <path class="fig-leader" d="M 412 44 H 484 M 392 185 H 484 M 460 307 H 484 M 27.5 349 V 372" />
+          <text x="490" y="44">名前と、既定値に戻すボタン</text>
+          <text x="490" y="185">つまみ。横の目盛りが既定値の位置</text>
+          <text x="490" y="307">列が収まらないときのスクロールバー</text>
+          <text x="20" y="383">すべての変数を既定値に戻す</text>
+        </svg>
+        <figcaption>チューニングのウィンドウ。変数ごとに縦の列が並びます。スクロールバーは、列がウィンドウに収まらないときだけ出ます。</figcaption>
+      </figure>
+      <ul>
+        <li>
+          変数ごとに縦の列が並びます。列には上から、名前と既定値に戻すボタン、現在の値、最大、つまみ、最小、「対数」が並びます。
+          つまみの横の目盛りが既定値の位置です。列がウィンドウに収まらないときは、下のスクロールバーで横に送ります。
+        </li>
+        <li>
+          つまみや欄を変えると、その場で解き直します。解析設定で周波数点数が多い場合、つまみをドラッグしている間は点数を減らした粗い点数で解析し、
+          離すと元の点数で解き直します。粗い結果を見ている間は、ステータスバーに「粗い解析の結果」と出ます。
+        </li>
+        <li>
+          つまみの上で縦ホイールを回すと、値が増減します（1目盛りでつまみの長さの 1%。<kbd>↑</kbd> <kbd>↓</kbd> と同じ）。
+          回している間は粗く解き、止まると元の点数で解き直します。
+        </li>
+        <li>
+          既定値に戻すには、名前の右のボタンを押すか、つまみの丸をダブルクリックするか、列を右クリック →「既定値に戻す」です。
+          左下のボタンは、動かした変数をすべて既定値に戻します（確認が出ます。範囲と「対数」はそのままです）。
+          つまみの値は回路図の「元に戻す」ではなく、これらのボタンで戻します。
+        </li>
+        <li>
+          範囲（最小～最大）は自由に設定できます。範囲の既定は、宣言した値の 1/10〜10 倍です。
+          <code>.tune</code> から変数の宣言を消すと、その変数の設定も消えます。
+        </li>
+        <li>「対数」は最小が正のときだけ効きます。範囲と対数の設定は、回路図ファイルに保存されます。</li>
+        <li>
+          欄は <kbd>Enter</kbd> で確定します。<code>1k</code> や <code>1M</code> などの接尾辞が使えます。範囲の外の値も打てます。
+          欄の値は有効4桁で表示します（解析には丸めない値を使います）。
+        </li>
+        <li>トレース式の中の変数も、つまみの値に追随します（<a href="#trace-expressions">トレース式</a>）。</li>
+        <li>ウィンドウを開いている間は、メインウィンドウの「実行」や <kbd>F5</kbd> もつまみの値で解きます。ウィンドウを閉じると、つまみの値で解いた結果は「結果が古い」になります。</li>
+        <li>
+          つまみの値は保存されません。残すときは「現在の値を .tune に書き戻す」を押します。動かした変数だけを、
+          欄に見えている有効4桁で <code>.tune</code> に書き込みます（「元に戻す」で戻せます）。
+        </li>
+      </ul>
+
+      <h3 id="tuning-targets">素子をチューニング対象にする</h3>
+      <p>
+        抵抗・キャパシタ・インダクタ・スイッチを右クリック →「チューニング対象にする」で、その素子の値をつまみで動かせるようにします。
+        素子の値（スイッチは状態）を ID と同じ名前の変数（<code>R1</code> なら <code>{R1}</code>）に書き換え、<code>.tune R1=元の値</code> を足します。
+      </p>
+      <ul>
+        <li>複数の素子を選んでおくと、まとめて対象にします。「元に戻す」1回で全部戻ります。</li>
+        <li>
+          スイッチは、つまみの範囲を 0〜接点数の線形にします。つまみを動かすと、接点が等間隔に切り替わり、回路図のレバーもその接点へ倒れます。
+          ウィンドウを閉じると、レバーは <code>.tune</code> に書いてある既定値の向きに戻ります。
+        </li>
+        <li>
+          宣言は、最後に置いた <code>.tune</code> の末尾に足します（つまみはウィンドウの一番右に並びます）。
+          <code>.tune</code> が無ければ、回路の下に新しく置きます。チューニングのウィンドウが閉じていれば開きます。
+        </li>
+        <li>値が式でも、定数の実数なら式のまま移します（<code>{Rbase*2}</code> は <code>.tune R1={Rbase*2}</code>）。</li>
+        <li>
+          周波数で変わる値、複素数、すでに <code>.tune</code> の変数を使っている値、短絡・開放した素子は対象にできません。
+          ID と同じ名前の変数がすでにあるときも対象にできません。理由はステータスバーに出ます。
+        </li>
+        <li>
+          戻すときは、右クリック →「チューニング対象から外す」です。値には <code>.tune</code> に書いてある既定値が戻ります
+          （つまみの値で残したいときは、先に「現在の値を .tune に書き戻す」を押します）。
+          ほかに使っている所が無ければ、宣言も消します。
+        </li>
+        <li>値がちょうど <code>{変数名}</code> の素子なら、手で書いた変数（<code>{Rload}</code> など）でも外せます。</li>
+        <li>素子の ID を変えても、変数の名前は自動では変わりません。</li>
+      </ul>
+    </section>
+
+    <section id="visualization">
+      <h2>回路の可視化</h2>
+      <p>
+        AC 解析の結果を、選んだ周波数で回路図に重ねて見せます。
+        ツールバーの「可視化モード」のボタン、または「解析」→「可視化モード」で入ります。
+        結果が無いか古いときは、先に解析してから入ります。
+        使いどころは examples の 17（LC はしごの進行波と定在波）と 18（バイパスコンデンサの反共振）を見てください。
+        電力の表示は、02（RLC 直列共振）や 19（力率改善）などにも見どころを書いてあります。
+      </p>
+
+      <h3>表示の種類</h3>
+      <table>
+        <thead>
+          <tr><th>表示</th><th>電圧</th><th>電流</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>瞬時値</td><td>色（負は青、正は赤）</td><td>流れる粒。位相を進めると、交流の動きが見えます</td></tr>
+          <tr><td>振幅</td><td>色の濃さ</td><td>線に沿った帯の太さ</td></tr>
+        </tbody>
+      </table>
+
+      <h3>電力の表示</h3>
+      <ul>
+        <li>
+          表示の種類で「平均電力」を選ぶと、部品が受け取る平均電力を部品の色で見せます。
+          消費（受け取った電力を熱にする）は赤、供給（電源などが電力を出す）は青です。ワイヤには電力が無いので塗りません。
+        </li>
+        <li>
+          色の濃さは、供給の合計に対する割合です。電源が1つなら電源がいちばん濃い青になり、負荷は消費した割合の濃さの赤になります。
+          理想の L・C は平均電力を受け取らないので灰です。ただし K で結合したインダクタは、一次で受け取った電力（赤）を二次へ出す（青）ので色が付きます。
+        </li>
+        <li>サブサーキット・Sパラメータの箱・伝送線路・スイッチは、部品全体が受け取る電力で本体を塗ります。損失の無い伝送線路は灰になります。</li>
+        <li>
+          「瞬時電力」を選ぶと、位相 θ での瞬時電力（その瞬間の電圧 × 電流）を見せます。受け取っているときは赤、送り出しているときは青です。
+          再生すると、抵抗は灰と赤の間を行き来するだけで青にはならず、L・C は電圧の 2 倍の速さで赤（蓄える）と青（返す）を繰り返します。
+          色の濃さは、部品の瞬時電力の大きさの最大を基準にします。
+        </li>
+        <li>「最大」を全周波数にすると、解析したすべての周波数での最大（平均では供給の合計、瞬時では瞬時電力の大きさ）を基準にします。「対数」では、電力の dB で最大から 60 dB 下までを濃淡で見せます。</li>
+      </ul>
+
+      <h3>可視化バー</h3>
+      <ul>
+        <li>左端のリストで表示の種類（瞬時値・振幅・瞬時電力・平均電力）を選びます。</li>
+        <li>「周波数」のつまみで解析した周波数点を選びます。欄に打つと、点の間の周波数でも解き直します。選んだ周波数は、グラフの上に印で出ます。</li>
+        <li>周波数の欄は、入力したら <kbd>Enter</kbd> で確定します。</li>
+        <li>瞬時値と瞬時電力では、再生ボタンで位相を進めます。「位相の速さ」と「粒の速さ」（瞬時値だけ）で、動きの速さを変えます。</li>
+        <li>「最大」は、色と帯の太さの基準を、選んだ周波数の中で取るか（この周波数）、全部の周波数で取るか（全周波数）です。</li>
+        <li>「対数」にすると、最大から 60 dB 下までを濃淡で見せます。振幅では「太帯」「縁取り」も選べます。</li>
+        <li>「凡例」をONにすると、色と帯の太さが表す値の目盛りが回路図の隅（最初は右上）に出ます。目盛りはドラッグで四隅のどこへでも移せます。離すと一番近い隅に寄ります。</li>
+        <li>表示の種類・速さ・最大・対数・凡例の位置などは保存され、次に起動したときも使われます。</li>
+      </ul>
+
+      <h3>可視化の間の操作</h3>
+      <ul>
+        <li>マウスを載せると、その場所の電圧・電流の振幅と位相が表示されます。部品なら両端の電圧と電流です。</li>
+        <li>
+          部品には、その部品が受け取る電力も出ます。「消費」「供給」は平均電力で、電力を出している部品（電源など）の合計に対する割合を添えます。
+          消費の割合を全部足すと 100% になります。無効電力は L で正、C で負です。
+          K で結合したインダクタは一次で受け取った電力を二次で出すだけなので、「受取」「送出」と書いて割合を添えず、組で1つとして合計に数えます。
+          制御電源（増幅器や、制御電源で組んだ変成器）が出す電力は、合計に数えます。
+          サブサーキット・Sパラメータの箱・伝送線路・スイッチでは、部品全体の電力です。ワイヤには電力は出ません。
+        </li>
+        <li>可視化中は、部品などの選択・移動・設定はできません。左ドラッグで表示範囲が動きます（凡例の上では凡例が動きます）。</li>
+        <li><kbd>Esc</kbd>、可視化ボタンをもう一度押す、バーの右の × のどれかで可視化を終わります。ツールの切り替えや、回路を変えたとき（元に戻すも含む）も抜けます。</li>
+        <li>Sパラメータ解析の結果と、サブサーキット回路図は可視化できません。</li>
+        <li>画像の書き出しには、可視化の色や凡例は載りません。</li>
+      </ul>
+    </section>
+
+    <section id="subcircuits">
+      <h2>サブサーキット</h2>
+      <p>回路の一部を別のファイル（サブサーキット回路図、<code>.fsub</code>）にして、部品として何度でも使えます。</p>
+
+      <h3 id="subcircuit-making">作り方と使い方</h3>
+      <ol>
+        <li>「ファイル」→「新規サブサーキット回路図」（<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>）。紙面の色とタブのアイコンが回路図とは異なります。</li>
+        <li>回路を描き、外とつなぐ点に <kbd>T</kbd> で端子を置きます（ネットラベルのプロパティで「外部端子にする」をONにしてもよい）。</li>
+        <li>右のペインで箱のピン配置を決めます。パラメータも指定できます。
+          <ul>
+            <li>ピンをドラッグし、置きたい辺の置きたい位置で離します。</li>
+            <li>ピンをクリックで選んで、キーボードの矢印キーを押すと、その向きの辺に移動します。</li>
+            <li>端子が多くて図が小さいときは、図の下の端をドラッグすると図の高さを変えられます。</li>
+            <li>図の下の一覧は辺ごとに分かれ、番号は端子の順番（使う側のピンの順）です。一覧の上下ボタンとドラッグでも動かせ、辺の境目を越えると辺が変わります。</li>
+            <li> 「パラメータと既定値」でパラメータを足し、中の部品の値に <code>{R}</code> のように書いて使います。既定値を空にすると、使う側での指定が必須になります。</li>
+            <li>箱の中に絵を描くときは「シンボルを編集 ...」を使います（<a href="#subcircuit-symbol">シンボルの図形</a>）。</li>
+          </ul>
+        </li>
+        <li>使う側の回路図で <kbd>X</kbd> を押し、<code>.fsub</code> を選んで置きます（ドロップでも置けます）。</li>
+        <li>パラメータの値は、置いた部品のプロパティで渡します。空欄なら既定値です。使う側の回路図で定義した変数も入力できます。「表示」をONにすると値が回路図に表示されます。</li>
+      </ol>
+      <ul>
+        <li>表示中の回路図をサブサーキット回路図にするには、「ファイル」→「現在のファイルをサブサーキット回路図に変換」を使います（逆方向もあります）。</li>
+        <li>サブサーキット回路図には置けないものがあります。上記の変換後にエラーが出たら削除してください。</li>
+        <li>サブサーキット回路図は入れ子にできます（サブサーキット回路図に別のサブサーキット回路図を置けます）。入れ子は 100 段までです。自分自身を参照する（循環する）とエラーです。</li>
+        <li>使う側は、解析の実行時にサブサーキット回路図ファイルを読み込んで使用します。そのため、編集中で保存していないサブサーキット回路図の編集内容は反映されません。</li>
+        <li>使う側はサブサーキット回路図のファイルを監視しています。ファイルが書き換えられたときは、念のため「解析結果が古い」という表示が出ます（内部の回路が変わっていなくても）。</li>
+        <li>中にエラーがあると、使う側には「… にエラーがあるため使用できません」の診断が出るので、サブサーキット回路図を開いて確かめてください。</li>
+      </ul>
+
+      <h3 id="subcircuit-symbol">シンボルの図形</h3>
+      <p>使う側に置いたときの箱の中に、線・四角・楕円・円弧を描けます。箱の形と大きさ、ピンの位置は変わりません。</p>
+      <ol>
+        <li>サブサーキット回路図の編集画面で、端子ペインにある「シンボルを編集 ...」を押します。</li>
+        <li>
+          上部の道具（選択・線・四角・楕円・円弧）を選び、クリックで始点、もう一度クリックで終点を決めます。<kbd>Esc</kbd> で選択に戻ります。
+          右クリックは、始点を置いた後なら始点だけを取り消し、そうでなければ選択に戻ります（回路図と同じ）。
+        </li>
+        <li>「OK」でサブサーキット回路図に記録されます（「元に戻す」で戻せます）。ファイルに保存すると、使う側にも反映されます。</li>
+      </ol>
+      <figure>
+        <svg class="fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-label="シンボルの編集ウィンドウと、使う側の箱">
+          <defs>
+            <pattern id="symbol-grid" x="87.5" y="67.5" width="5" height="5" patternUnits="userSpaceOnUse">
+              <circle class="fig-dot" cx="2.5" cy="2.5" r="0.7" />
+            </pattern>
+          </defs>
+          <text class="fig-strong" x="150" y="14" text-anchor="middle">シンボルの編集ウィンドウ</text>
+          <text class="fig-small" x="150" y="34" text-anchor="middle">箱は淡く、描いた図形だけが濃く出ます</text>
+          <rect class="fig-pane" x="90" y="70" width="120" height="80" />
+          <rect x="90" y="70" width="120" height="80" fill="url(#symbol-grid)" />
+          <path class="fig-leader" d="M 90.5 70.5 h 119 v 79 h -119 Z M 70 90 H 90 M 70 130 H 90 M 210 90 H 230 M 210 130 H 230" />
+          <path class="fig-line" d="M 90 90 H 110 a 10 10 0 0 1 20 0 a 10 10 0 0 1 20 0 a 10 10 0 0 1 20 0 a 10 10 0 0 1 20 0 H 210 M 90 130 H 110 a 10 10 0 0 0 20 0 a 10 10 0 0 0 20 0 a 10 10 0 0 0 20 0 a 10 10 0 0 0 20 0 H 210 M 110 105 H 190 M 110 115 H 190" />
+          <text class="fig-small" x="150" y="190" text-anchor="middle">点は 1/4 グリッドの刻みで、箱の中にだけ置けます</text>
+          <path class="fig-leader" d="M 290 110 H 410" />
+          <path class="fig-arrow" d="M 420 110 l -10 -5 v 10 Z" />
+          <text class="fig-small" x="350" y="96" text-anchor="middle">OK して保存</text>
+          <text class="fig-strong" x="530" y="14" text-anchor="middle">使う側の回路図</text>
+          <text class="fig-small" x="530" y="34" text-anchor="middle">「名前表示」を外した端子は名前を描きません</text>
+          <text class="fig-code" x="470" y="56">X1</text>
+          <path class="fig-line" d="M 450 90 H 470 M 450 130 H 470 M 590 90 H 610 M 590 130 H 610" />
+          <rect class="fig-pane" x="470.5" y="70.5" width="119" height="79" />
+          <path class="fig-line" d="M 470 90 H 490 a 10 10 0 0 1 20 0 a 10 10 0 0 1 20 0 a 10 10 0 0 1 20 0 a 10 10 0 0 1 20 0 H 590 M 470 130 H 490 a 10 10 0 0 0 20 0 a 10 10 0 0 0 20 0 a 10 10 0 0 0 20 0 a 10 10 0 0 0 20 0 H 590 M 490 105 H 570 M 490 115 H 570" />
+        </svg>
+        <figcaption>コモンモードチョークの絵を描いたところ。使う側では、箱の中に描いた図形がそのまま出ます（回転・左右反転にも追従します）。</figcaption>
+      </figure>
+      <ul>
+        <li>円弧は、引いた向きの側へ膨らむ四分円ができ、両端のつまみで 15° 刻みに角度を変えます（回路図の図形と同じ）。</li>
+        <li>選んだ図形はドラッグで動かし、つまみで形を変えます。線種は「線種」の一覧で変えます。</li>
+        <li><kbd>Delete</kbd> で削除、<kbd>Ctrl</kbd>+<kbd>A</kbd> で全選択。<kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> は、ウィンドウの中の操作を戻し・やり直します。</li>
+        <li>「クリア」は図形をすべて消し、箱だけの見た目に戻します（削除前に確認を表示します）。</li>
+        <li>「キャンセル」と × は、ウィンドウの中の変更を捨てます。<kbd>Esc</kbd> では閉じません。</li>
+        <li>図形は箱の中央を基準にしています。端子を足し引きして箱の大きさが変わっても図形は中央に残り、箱からはみ出した部分は描かれません（はみ出した部分がある場合、サブサーキット回路図に警告が出ます）。</li>
+        <li>端子ペインの一覧で「名前表示」を外すと、使う側の箱の中にその端子の名前を描きません。端子ペインの図には薄く出ます。</li>
+      </ul>
+
+      <h3 id="terminal-changes">端子を変えたとき</h3>
+      <table>
+        <thead>
+          <tr><th>変えたこと</th><th>使う側での扱い</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>端子を末尾に足した</td><td>自動で取り込みます。新しいピンは、つなぐまで「何にも接続されていません」の警告が出ます</td></tr>
+          <tr><td>並べ替えた・辺を変えた</td><td>取り込むまで、前の並びのまま解きます（警告）</td></tr>
+          <tr><td>端子を消した・途中に足した</td><td>取り込むまで解析できません（エラー）</td></tr>
+          <tr><td>端子の名前・名前表示・パラメータ・シンボルの図形を変えた</td><td>取り込みは要りません</td></tr>
+        </tbody>
+      </table>
+      <p>
+        取り込みが要る部品には、箱の右上に「!」が付きます。部品を右クリック →「端子の変更を取り込む」で取り込みます。
+        同じ定義の部品が複数あれば、まとめて取り込めます。
+      </p>
+
+      <h3 id="subcircuit-inside">中のノードと部品を指す</h3>
+      <ul>
+        <li>トレース式では、<code>V(X1.mid)</code>（中のネットラベル mid の電圧）、<code>I(X1.R1)</code>、入れ子なら <code>V(X1.X2.n)</code> と書きます。端子の電流は <code>I(X1, in)</code> です。</li>
+        <li>電圧源・電流源の値の式からは、サブサーキットの中を指せません。</li>
+      </ul>
+
+      <h3 id="testbench">テストベンチ</h3>
+      <p>
+        サブサーキット回路図は、それだけでは解析できません。
+        「ファイル」→「現在のサブサーキット回路図のテストベンチを作成」で、すぐに解析できるテスト用の回路図を作れます（未保存なら先に保存します）。
+      </p>
+      <ul>
+        <li>中身は、サブサーキット（パラメータは既定値）、1番目の端子に振幅 1 の電圧源、2番目以降の端子は 1 kΩ 抵抗を通して GND に接続、<code>.ac dec 100 10k 100M</code>、2番目の端子の電圧のグラフです。</li>
+        <li>新しいタブに未保存で開きます。保存のウィンドウは、サブサーキット回路図と同じフォルダの <code>名前_testbench.fsim</code> から始まります。</li>
+        <li>作られたテストベンチは自由に改変して使ってください。</li>
+      </ul>
+    </section>
+
+    <section id="s-parameters">
+      <h2>Sパラメータ</h2>
+
+      <h3 id="sp-analysis">Sパラメータ解析</h3>
+      <ul>
+        <li>ポート（<kbd>P</kbd>）を置いて番号（1 からの連番）と Z₀ を決め、<code>.sp</code> を置いて実行します。</li>
+        <li><code>S(2,1)</code> はポート1から入れてポート2で見た値です。ほかのポートは、それぞれの Z₀ で終端します。</li>
+        <li>
+          ポートごとに Z₀ が違っても構いません。
+          ミックスドモードSパラメータでは、Balanced port に組み合わせる2つのポートの Z₀ を揃えてください。
+          Touchstone に出力する場合は、すべてのポートの Z₀ を揃える必要があります。
+        </li>
+        <li><code>Zin(1)</code> は Z₀₁(1+S₁₁)/(1−S₁₁) です。ほかのポートは Z₀ で終端したままです（開放ではありません）。</li>
+        <li>独立電源は使いません。電圧源は短絡、電流源は開放として扱われます。</li>
+        <li>制御電源については、式中の電圧・電流に比例する部分のみ回路の一部として残ります（定数項は無視されます）。</li>
+        <li>AC 解析では、ポートは Z₀ の抵抗に見えます。</li>
+      </ul>
+
+      <h3 id="mixed-mode">ミックスドモードSパラメータ</h3>
+      <p>
+        差動の信号を扱う回路は、ポートを2つ1組にして、ミックスドモードSパラメータ（Sdd・Scc・Sdc・Scd など）で見られます。
+        <code>.sp</code> の後ろにポートの割り当て（トポロジー）を書きます（例: <code>.sp dec 100 1M 1G bal(1,2) bal(3,4)</code>）。
+        <a href="#directive-dialog">設定ウィンドウ</a>の表でも決められます。
+      </p>
+      <figure>
+        <svg class="fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" role="img" aria-label="ポートの割り当てと Logical port の対応">
+          <rect class="fig-code-bg" x="242" y="6" width="236" height="26" rx="3" />
+          <text class="fig-code" x="360" y="19" text-anchor="middle">.sp dec 100 1M 1G bal(1,2)</text>
+          <text class="fig-strong" x="180" y="108" text-anchor="end">Logical port 1</text>
+          <text x="180" y="130" text-anchor="end">Balanced port</text>
+          <text x="180" y="152" text-anchor="end">モード d・c</text>
+          <path class="fig-line" d="M 200 78 H 194 V 182 H 200 M 194 130 H 188" />
+          <text x="262" y="90" text-anchor="end">ポート1</text>
+          <text x="274" y="88" text-anchor="middle">+</text>
+          <text x="262" y="170" text-anchor="end">ポート2</text>
+          <text x="274" y="168" text-anchor="middle">−</text>
+          <path class="fig-line" d="M 285 90 H 325 M 285 170 H 325 M 435 130 H 485" />
+          <rect class="fig-pane" x="325.5" y="60.5" width="110" height="140" />
+          <text x="380.5" y="130.5" text-anchor="middle">3ポートの回路</text>
+          <text x="492" y="130">ポート3</text>
+          <path class="fig-line" d="M 552 118 H 560 V 142 H 552 M 560 130 H 567" />
+          <text class="fig-strong" x="574" y="108">Logical port 2</text>
+          <text x="574" y="130">Single-ended port</text>
+          <text x="574" y="152">モード s</text>
+          <text x="360" y="232" text-anchor="middle">d（差動）Vd = V+ − V−　　c（同相）Vc = (V+ + V−)/2　　s（シングルエンド）</text>
+        </svg>
+        <figcaption>3ポートの回路で <code>bal(1,2)</code> だけを書いたとき。書かなかったポート3は、末尾に Single-ended port として足され、Logical port 2 になります。</figcaption>
+      </figure>
+      <ul>
+        <li><code>bal(1,2)</code> は、ポート1を +、ポート2を − にした Balanced port（2つで1組のポート）です。<code>se(3)</code> は、ポート3だけの Single-ended port です。</li>
+        <li>番号の前後には空白を入れても構いません（<code>bal(1, 2)</code>）。途中には空白を入れられません（<code>bal(1 0,2)</code> はポート 10 ではなくエラーです）。</li>
+        <li>
+          書いた順に Logical port の番号 1, 2, … が付きます。書かなかったポートは、番号の小さい順に末尾へ Single-ended port として自動的に含めます。
+          つまり、3ポートの回路で <code>bal(1,2)</code> だけを書くと、ポート3は自動的に Logical port 2 になります。
+        </li>
+        <li>
+          トレース式では <code>Sdd(2,1)</code> のように書きます。S の後ろの2文字は、応答側と入射側のモード（d：差動、c：同相、s：シングルエンド）です。
+          括弧の中は Logical port の番号（応答, 入射）です。d と c は Balanced port だけが、s は Single-ended port だけが持ちます。
+        </li>
+        <li>元の S も、<code>S(2,1)</code> のように元のポート番号でそのまま読めます。</li>
+        <li>
+          差動は Vd = V+ − V−、同相は Vc = (V+ + V−)/2 です。基準インピーダンスは、差動が 2·Z₀、同相が Z₀/2 です（Z₀ = 50 Ω なら 100 Ω と 25 Ω）。
+          Balanced port の2つのポートは Z₀ が同じでなければなりません。Logical port どうしでは違っても構いません。
+        </li>
+        <li>
+          Balanced port の + と − を入れ替えると、そのポートの d を応答側と入射側の片方にだけ含む値の符号が反転します。両方に含む値と、含まない値は変わりません。
+          Balanced port が1つなら、反転するのは Sdc、Scd、Sds、Ssd で、Sdd と Scc は変わりません。
+          2つあるときに Logical port 1 だけを入れ替えると、<code>Sdd(2,1)</code> と <code>Scd(2,1)</code> は反転し、<code>Sdc(2,1)</code> と <code>Sdd(1,1)</code> は変わりません。
+        </li>
+        <li>
+          ポートの両端を回路につないだ「差動のポート」とは別物です。そちらは差動だけを Z₀ を基準に見るポートで、同相は見えません。
+          ミックスドモードSパラメータには、片側を GND につないだポートを2つ使います（差動の計算にはミックスドモードSパラメータのほうを推奨します）。
+        </li>
+        <li>回路に無いポートを書いたとき、同じポートを2回使ったとき、Balanced port の2つの Z₀ が違うときは、実行する前にエラーになります。Balanced port が1つも無いときは警告です。</li>
+        <li>ポートの割り当ては <code>.sp</code> ごとに書けます。<code>.sp</code> を2つ置けば、同じ回路を別の割り当てで比較できます。</li>
+        <li>使い方は examples の 14（差動ローパスフィルタ）を見てください。</li>
+        <li>トレースの「データから追加」では、元の S と Zin の後ろにミックスドモードSパラメータがモードの組ごと（Sdd、Sdc、…、Sss の順）に並びます。「追加」の雛形は Logical port 1 の反射です。</li>
+      </ul>
+
+      <h3 id="network-block">Sパラブロック</h3>
+      <p>Touchstone ファイル（<code>.s1p</code>、<code>.s2p</code>、…）を、Sパラブロック（<kbd>S</kbd>）として回路に組み込めます。</p>
+      <ul>
+        <li>読めるのは Touchstone v1.0 の S / Y / Z パラメータです。形式は MA / DB / RI、周波数の単位は Hz / kHz / MHz / GHz です。</li>
+        <li>ファイル内の <code>#</code> の行の項目が省略されている場合、GHz・S・MA・R 50 として読みます。</li>
+        <li>ポート数は拡張子で決まります（<code>.s2p</code> なら 2）。</li>
+        <li>Z₀ はファイルに書かれた値を使います。</li>
+        <li>
+          ピンはポート数 + 1 本で、最後のピン（Ref）は全ポート共通の基準端子です。GND には自動でつながりません。
+          基準端子を浮かせると解析エラーになることがありますので、浮かせたいときは 1GΩ の抵抗などを経由して GND に接続してください。
+        </li>
+        <li>
+          ピンを出す辺と、辺の中の並びは、プロパティの「ポートの配置」の図で決めます。ピンをドラッグし、置きたい辺の置きたい位置で離します。
+          図の外で離すか、ドラッグ中に <kbd>Esc</kbd> で取り消せます。
+          ピンをクリックで選んで矢印キーを押すと、その向きに見えている辺に移動します（回転・反転していても見えている向きのまま）。
+          ポートが多くて図が小さいときは、ウィンドウの端をドラッグして広げると図が大きくなります。
+        </li>
+        <li>
+          3 ポート以上では、「プリセット」のボタンで一度に並べられます。「交互」は奇数番を左・偶数番を右に、
+          「順番」は前半を左・後半を右に並べます（ポート数が奇数なら右が1本多い。Ref は下）。ファイルのポート番号の付け方に合うほうを選びます。
+          <figure>
+            <svg class="fig" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 215" role="img" aria-label="Sパラブロックのプリセットのピンの並び">
+              <text class="fig-strong" x="180" y="14" text-anchor="middle">交互</text>
+              <text class="fig-small" x="180" y="34" text-anchor="middle">奇数番を左、偶数番を右</text>
+              <path class="fig-line" d="M 100 80 H 130 M 100 140 H 130 M 230 80 H 260 M 230 140 H 260 M 180 170 V 200" />
+              <rect class="fig-pane" x="130.5" y="50.5" width="100" height="120" />
+              <text x="140" y="80">1</text>
+              <text x="140" y="140">3</text>
+              <text x="221" y="80" text-anchor="end">2</text>
+              <text x="221" y="140" text-anchor="end">4</text>
+              <text x="180.5" y="158" text-anchor="middle">Ref</text>
+              <text class="fig-strong" x="540" y="14" text-anchor="middle">順番</text>
+              <text class="fig-small" x="540" y="34" text-anchor="middle">前半を左、後半を右</text>
+              <path class="fig-line" d="M 460 80 H 490 M 460 140 H 490 M 590 80 H 620 M 590 140 H 620 M 540 170 V 200" />
+              <rect class="fig-pane" x="490.5" y="50.5" width="100" height="120" />
+              <text x="500" y="80">1</text>
+              <text x="500" y="140">2</text>
+              <text x="581" y="80" text-anchor="end">3</text>
+              <text x="581" y="140" text-anchor="end">4</text>
+              <text x="540.5" y="158" text-anchor="middle">Ref</text>
+            </svg>
+            <figcaption>4ポート（<code>.s4p</code>）のときのピンの並び。どちらも各辺は上から番号順です。</figcaption>
+          </figure>
+        </li>
+        <li>
+          「この配置を保存」で、今の並びを Touchstone ファイルの隣のファイルに保存します（<code>filter.s4p</code> なら <code>filter.s4p.fspins</code> というファイルに保存）。
+          Touchstone ファイルそのものは書き換えません。押した時点で保存され、ウィンドウをキャンセルしても残ります。ファイルが既にあれば上書きします。
+          保存した配置のある Touchstone ファイルは、次にこのファイルを置くときにそのピン配置が反映されます。
+          「保存した配置」のボタンで、いつでもその配置に戻せます（今の並びが保存した配置と同じなら、2つのボタンはどちらも押せません）。
+          なお、置いた後で保存し直しても、既に置いてある他の Sパラブロックのピン配置は変わりません。
+        </li>
+        <li>どの辺もピンが1本までなら小さい箱になり、2本以上並ぶ辺があると大きい箱になります（サブサーキットと同じ）。</li>
+        <li>配置を変えるとピンの位置が動くので、つながっていた配線が外れたり、別のピンにつながったりします。変えた後は配線を確かめてください。</li>
+        <li>
+          プロパティウィンドウの概要（種類・ポート数・Z₀・周波数範囲）の右にある目のボタンで、ファイルの中身をそのまま見られます。
+          OK を押す前でも、選び直したファイルを開きます。回路図の Sパラブロックの右クリック →「Touchstoneファイルの内容を表示 ...」でも開けます。
+          読めないファイルでも開けるので、どこが壊れているかを探せます。
+        </li>
+        <li>データの点の間は、実部と虚部を周波数に対して線形補間します。データの範囲の外は外挿せず、その周波数だけエラー（FS0705）になります。</li>
+        <li>「解析」→「外部データの周波数範囲 ...」で、データの範囲と解析の周波数を見比べられます（<a href="#frequency-range">外部データの周波数範囲</a>）。</li>
+      </ul>
+
+      <h3 id="touchstone-export">Touchstone への S パラメータの書き出し</h3>
+      <ul>
+        <li>Sパラメータ解析の結果を表示しているときに、「ファイル」→「エクスポート」→「Sパラメータ解析結果を Touchstone（.s*p）に保存 ...」で書き出します。</li>
+        <li>形式（DB・MA・RI）と周波数の単位を選びます。既定は DB と Hz です。誤差なく書き出せるのは RI と Hz の組み合わせだけです（他の形式は数値計算による微小な誤差が生じます）。</li>
+        <li>ポートの Z₀ がすべて同じで、途中に解けなかった周波数が無いときに書き出せます。</li>
+        <li>ミックスドモードSパラメータは Touchstone ではなく、生データの CSV に書き出せます。</li>
+      </ul>
+    </section>
+
+    <section id="files">
+      <h2>ファイルと書き出し</h2>
+
+      <h3 id="file-kinds">ファイルの種類</h3>
+      <table>
+        <thead>
+          <tr><th>拡張子</th><th>中身</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>.fsim</code></td><td>回路図</td></tr>
+          <tr><td><code>.fsub</code></td><td>サブサーキット回路図</td></tr>
+          <tr><td><code>.csv</code></td><td>インピーダンスや電源の値の表（値に <code>FILE=</code> と書いて参照する）</td></tr>
+          <tr><td><code>.s1p</code>、<code>.s2p</code>、…</td><td>Touchstone（Sパラブロックで参照する）</td></tr>
+          <tr><td><code>.fspins</code></td><td>Sパラブロックのピンの配置（Touchstone ファイルの隣に置く。「この配置を保存」で作る）</td></tr>
+        </tbody>
+      </table>
+      <p>タブで開けるのは <code>.fsim</code> と <code>.fsub</code> だけです。CSV と Touchstone は、回路図から参照して使います。</p>
+
+      <h3 id="opening">開く・保存する</h3>
+      <ul>
+        <li>「開く ...」、「最近使ったファイル」（10件まで）、「サンプルを開く ...」、ウィンドウへのドロップで開きます。FreqSim の実行ファイルやショートカットにファイルをドラッグ＆ドロップしても開けます。</li>
+        <li>同じファイルは1つのタブでしか開けません。既に開いているファイルを開こうとすると、そのタブに移ります。</li>
+        <li>未保存のタブを閉じるときと終了するときは、保存するかを尋ねます。</li>
+        <li>examples のサンプルは上書きできません。上書き保存しようとすると、別の場所に名前を付けて保存するよう尋ねます。examples のフォルダの中には、保存も書き出しもできません。</li>
+        <li>FreqSim を2つ起動すると、それぞれで同じファイルを開けてしまいます。あとから保存したほうが残るので注意してください。</li>
+      </ul>
+
+      <h3 id="references">参照しているファイル</h3>
+      <ul>
+        <li>参照しているファイル（<code>.fsub</code>・CSV・Touchstone）は、回路図からの相対パスで保存されます。回路図を人に渡すときは、参照先のファイルも同じフォルダ構成のまま一緒に渡してください。フォルダごとZIPファイルなどに圧縮して渡すのが安全です。</li>
+        <li>「名前を付けて保存」で別の場所へ移すと、相対パスを書き直します。参照先のファイルはコピーしません。</li>
+        <li>参照先のファイルが無くても回路図は開けますが、解析はエラーで止まります。</li>
+        <li>参照先のファイルが書き換わると、それを使う回路図の結果が「古い」になります。</li>
+      </ul>
+
+      <h3 id="export">書き出し</h3>
+      <table>
+        <thead>
+          <tr><th>書き出すもの</th><th>入口</th><th>中身</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>グラフのデータ（CSV）</td><td>「ファイル」→「エクスポート」、グラフの右クリック</td><td>周波数と、トレースごとの描いている値。スミスチャートと極座標グラフは実部と虚部の2列ずつ</td></tr>
+          <tr><td>解析結果の生データ（CSV）</td><td>「ファイル」→「エクスポート」、何も無い所の右クリック</td><td>選んだ電圧・電流・S パラメータ（ポートの割り当てを書いた <code>.sp</code> ならミックスドモードSパラメータも）を、実部と虚部の2列ずつ。列は書き出す前のウィンドウで選びます（並びはトレースの「データから追加」と同じ）</td></tr>
+          <tr><td>Touchstone</td><td>「ファイル」→「エクスポート」、何も無い所の右クリック</td><td>Sパラメータ解析の結果（<a href="#touchstone-export">Touchstone への書き出し</a>）</td></tr>
+          <tr><td>回路図全体の画像</td><td>「ファイル」→「エクスポート」、何も無い所の右クリック</td><td>SVG に保存するか、画像としてコピー</td></tr>
+          <tr><td>選択範囲の画像</td><td>「ファイル」→「エクスポート」、部品などの右クリック</td><td>選んでいるものだけ。グラフを1枚だけ選んでいれば、そのグラフ</td></tr>
+          <tr><td>グラフの画像</td><td>グラフの右クリック</td><td>SVG に保存するか、画像としてコピー。カーソルの表も載ります</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>画像のコピーでは、SVG・PNG・ビットマップがクリップボードに入ります。Office などにそのまま貼れます。</li>
+        <li>SVG の文字は図形（輪郭）として書き出します。PNG のファイルへの保存はありません。</li>
+        <li>画像の背景は既定で透明です（設定の「画像の書き出しに背景を含める」）。配色は回路図の配色に従います。</li>
+        <li>CSV は UTF-8（BOM 付き）です。欠測値は <code>NaN</code> と書きます（設定で空欄にできます）。−∞ dB は −300 dB に丸めます。</li>
+      </ul>
+    </section>
+
+    <section id="keys">
+      <h2>キー操作の一覧</h2>
+      <p>
+        キーは、効く場所が3通りに分かれます。入力欄に文字を打っている間に、回路図のキーが入力を奪うことはありません。
+        日本語入力がオンのままでも、英字1文字のキーは効きます。
+      </p>
+
+      <h3>どこでも効くキー</h3>
+      <table>
+        <thead>
+          <tr><th>キー</th><th>働き</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd></td><td>新規回路図</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd></td><td>新規サブサーキット回路図</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>開く</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>上書き保存</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>名前を付けて保存</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>W</kbd></td><td>タブを閉じる（未保存なら確認します）</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>元に戻す / やり直す</td></tr>
+          <tr><td><kbd>F5</kbd></td><td>解析の実行。実行中に押すと中止します</td></tr>
+          <tr><td><kbd>F1</kbd></td><td>このヘルプを開く</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>検索バーを出して入力欄に移る（<a href="#search">回路図の検索</a>）</td></tr>
+          <tr><td><kbd>F3</kbd> / <kbd>Shift</kbd>+<kbd>F3</kbd></td><td>次 / 前の一致へ。検索バーを閉じていても前回の語で探します</td></tr>
+        </tbody>
+      </table>
+
+      <h3>回路図・パレット・タブ・診断の一覧にいるときに効くキー</h3>
+      <table>
+        <thead>
+          <tr><th>キー</th><th>働き</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> / <kbd>C</kbd> / <kbd>V</kbd></td><td>切り取り / コピー / 貼り付け。貼り付けはクリックで置き、<kbd>Esc</kbd> か右クリックでやめます。診断の一覧では、<kbd>Ctrl</kbd>+<kbd>C</kbd> は選んでいる行のコピーで、<kbd>Ctrl</kbd>+<kbd>X</kbd> は効きません</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>時計回りに 90° 回転。置く前の部品と、貼り付け待ちのものにも効きます。選んだものはまとめて回ります</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>E</kbd></td><td>左右反転。効く相手は <kbd>Ctrl</kbd>+<kbd>R</kbd> と同じです</td></tr>
+          <tr><td>英字1文字</td><td>部品の切り替え（<a href="#tool-keys">部品</a>の表）。<kbd>Shift</kbd> などを押していると効きません</td></tr>
+        </tbody>
+      </table>
+
+      <h3>回路図にいるときだけ効くキー</h3>
+      <table>
+        <thead>
+          <tr><th>キー</th><th>働き</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><kbd>Delete</kbd></td><td>選んでいるものを削除</td></tr>
+          <tr><td><kbd>Enter</kbd> / <kbd>F2</kbd></td><td>選んでいる1つのプロパティを開く（グラフならグラフ設定、ワイヤならそのノードのネットラベル）</td></tr>
+          <tr><td><kbd>Space</kbd></td><td>画面にフィット</td></tr>
+          <tr><td>カーソルキー</td><td>表示範囲の移動。<kbd>Shift</kbd> を押すと大きく動きます</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>途中の操作を取り消して選択に戻り、選択を解除します。可視化も終わります</td></tr>
+        </tbody>
+      </table>
+
+      <h3>ダイアログの中のキー</h3>
+      <ul>
+        <li><kbd>Enter</kbd> で OK、<kbd>Esc</kbd> でキャンセルです。コメントの本文の欄だけは、<kbd>Enter</kbd> で改行します。</li>
+        <li>検索バーの欄では、<kbd>Enter</kbd> で次、<kbd>Shift</kbd>+<kbd>Enter</kbd> で前の一致へ移り、<kbd>Esc</kbd> で閉じます。</li>
+        <li>「グラフ設定」の欄は、<kbd>Enter</kbd> を押すか、ほかの欄へ移ったときに反映します。</li>
+        <li>数値の欄は、<kbd>↑</kbd> <kbd>↓</kbd> で1刻み、<kbd>PageUp</kbd> <kbd>PageDown</kbd> で大きく変わります。</li>
+        <li>メッセージのウィンドウで <kbd>Ctrl</kbd>+<kbd>C</kbd> を押すと、本文をクリップボードにコピーします。</li>
+        <li>
+          「外部データの周波数範囲」のウィンドウでは、解析設定の行を <kbd>↑</kbd> <kbd>↓</kbd> で選び直せます。
+          選んだ行は <kbd>Shift</kbd>+<kbd>F10</kbd> で右クリックのメニューが開きます（<a href="#frequency-range">外部データの周波数範囲</a>）。
+        </li>
+      </ul>
+    </section>
+
+    <section id="settings">
+      <h2>設定</h2>
+      <p>メニューの「設定」で切り替えます。</p>
+      <table id="settings-list">
+        <thead>
+          <tr><th>項目</th><th>働き</th><th>既定</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ワイヤを追従させる</td><td>部品やワイヤを動かすとき、つながっているワイヤも付いてくる。ON でも <kbd>Alt</kbd> を押している間は切れます。ツールバーの「ワイヤ追従」と同じです</td><td>ON</td></tr>
+          <tr><td>貼り付け・複製したネットラベルの名前が重なったら変える</td><td>ON なら名前を変えて別のノードにします。OFF なら同じ名前のまま置き、元のノードにつながります</td><td>ON</td></tr>
+          <tr><td>範囲選択で完全に囲んだものだけを選ぶ</td><td>OFF なら、枠に少しでも触れたものを選びます</td><td>OFF</td></tr>
+          <tr><td>電流源を上向きで置く</td><td>電流源を、矢印が上を向いた向きで置き始めます。OFF なら下向き（電圧源と同じく正極が上）です。パレットの絵も同じ向きになります。電流源を選んだ状態で切り替えたときは、別のツールを選んでから選び直すと効きます</td><td>ON</td></tr>
+          <tr><td>グリッドを表示する</td><td>背景の格子の点。OFF でもグリッドへの吸着は効きます。どちらにしても画像の書き出しには出ません</td><td>ON</td></tr>
+          <tr><td>グラフの枠を表示する</td><td>グラフをいつも枠で囲みます。画像の書き出しにも出ます</td><td>OFF</td></tr>
+          <tr><td>グラフの引き出し線を表示する</td><td>グラフを選んでいる間、トレースが測っている場所へ線を引きます</td><td>ON</td></tr>
+          <tr><td>引き出し線を凡例から出す</td><td>線をグラフの枠ではなく、凡例の項目から出します</td><td>ON</td></tr>
+          <tr><td>CSV出力時に欠測値を空欄にする</td><td>OFF なら NaN と書きます。読み込む側が NaN を扱えないときに ON にします</td><td>OFF</td></tr>
+          <tr><td>回路図の配色</td><td>下の5通りから選びます。画像の書き出しにも効きます</td><td>標準</td></tr>
+          <tr><td>画像の書き出しに背景を含める</td><td>SVG・画像の書き出しとコピーで、紙面の色を背景に敷きます。OFF なら背景は透明（クリップボードのビットマップだけは白か黒の背景）</td><td>OFF</td></tr>
+        </tbody>
+      </table>
+
+      <h3>回路図の配色</h3>
+      <table>
+        <thead>
+          <tr><th>配色</th><th>向いている使い方</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>標準</td><td>ふだんの画面</td></tr>
+          <tr><td>高コントラスト</td><td>プロジェクタや画面共有</td></tr>
+          <tr><td>ダーク</td><td>暗い画面</td></tr>
+          <tr><td>モノクロ</td><td>グレースケールで印刷する資料。灰色の濃さで見分けられるトレースは3本まで</td></tr>
+          <tr><td>モノクロ（反転）</td><td>暗い地のスライドに、背景を含めずに貼る</td></tr>
+        </tbody>
+      </table>
+
+      <h3>設定の保存</h3>
+      <ul>
+        <li>終了するときに <code>%APPDATA%\FreqSim\settings.json</code> へ保存します。異常終了すると、その回の変更は保存されません。</li>
+        <li>可視化の表示の好み、検索バーを置いた隅、最近使ったファイルも同じファイルに入ります。ウィンドウの位置と大きさ、検索の語と「単語」「すべての欄」は保存しません。</li>
+        <li>ファイルが壊れていたら <code>settings.json.bak</code> に退避し、既定の設定で起動します。</li>
+      </ul>
+    </section>
+
+    <section id="diagnostics">
+      <h2>診断</h2>
+      <p>回路図の誤りや、解析で解けなかったことは、画面下の診断の一覧に出ます。</p>
+
+      <h3 id="diagnostic-list">診断の一覧の見方</h3>
+      <ul>
+        <li>行には、重大度とコード（「エラー (FS0101)」など）、場所、本文が並びます。エラーは赤で、警告より先に並びます。</li>
+        <li>行をダブルクリックすると、その部品を選んで画面に入れます。サブサーキットの中なら、そのサブサーキットへ移ります。部品を指さない診断では移動しません。</li>
+        <li>右クリック →「コピー」か <kbd>Ctrl</kbd>+<kbd>C</kbd> で、行の中身をクリップボードにコピーします。</li>
+        <li>エラーが1つでもあると解析しません。警告は解析を止めません。</li>
+        <li>FS0705 と FS0801 は、周波数の点ごとのエラーです。その点だけが欠けてグラフの線が切れ、ほかの点は描かれます。</li>
+        <li>解析の途中で出た診断は、次に解析するまで残ります。回路図を直しただけでは消えません。</li>
+      </ul>
+
+      <h3 id="diagnostic-codes">コードの番号</h3>
+      <p>コードの先頭の4文字で、どこで見つかった誤りかが分かります。</p>
+      <table id="diagnostic-bands">
+        <thead>
+          <tr><th>コード</th><th>分類</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>FS01xx</code></td><td>回路の構造（接地、浮いたノード、ID）</td></tr>
+          <tr><td><code>FS02xx</code></td><td>部品の値</td></tr>
+          <tr><td><code>FS03xx</code></td><td>部品・ノードの参照（磁気結合、制御電源）</td></tr>
+          <tr><td><code>FS04xx</code></td><td>ポート</td></tr>
+          <tr><td><code>FS05xx</code></td><td>サブサーキット</td></tr>
+          <tr><td><code>FS06xx</code></td><td>式</td></tr>
+          <tr><td><code>FS07xx</code></td><td>外部のファイル（CSV、Touchstone）の中身</td></tr>
+          <tr><td><code>FS08xx</code></td><td>解析の実行（解けない周波数など）</td></tr>
+          <tr><td><code>FS09xx</code></td><td>テキストのネットリストの書き方（回路図からは、<code>.param</code> と <code>.tune</code> の値が数値として読めないときだけ出ます）</td></tr>
+          <tr><td><code>FA01xx</code></td><td>部品の値の書き方</td></tr>
+          <tr><td><code>FA02xx</code></td><td>解析設定と変数定義</td></tr>
+          <tr><td><code>FA03xx</code></td><td>回路図の部品とつながり</td></tr>
+          <tr><td><code>FA04xx</code></td><td>回路図ファイル</td></tr>
+          <tr><td><code>FA05xx</code></td><td>解析の規模（メモリ）</td></tr>
+          <tr><td><code>FA06xx</code></td><td>参照しているファイル（サブサーキット回路図、Touchstone、CSV）</td></tr>
+        </tbody>
+      </table>
+
+      <h3 id="common-diagnostics">よく出る診断</h3>
+      <div id="common-diagnostic-list">
+        <h4><code>FS0101</code> 接地ノードが無い</h4>
+        <p>回路に GND がありません。電圧の基準が無いので解析できません。</p>
+        <ul>
+          <li><kbd>G</kbd> で GND を置きます。ネットラベルの名前を <code>0</code> か <code>GND</code> にしても GND と同じになりますが、見た目的にも分かりやすい GND の使用を推奨します。</li>
+        </ul>
+
+        <h4><code>FS0103</code> 接地から届かないノードがある</h4>
+        <p>GND まで導通の経路が無いノードがあります。名前の無いノードは <code>N001</code> のように出ます。</p>
+        <ul>
+          <li>原因の例: GND につながっていない島がある。磁気結合の二次側や、伝送線路の帰路の端子を GND につないでいない。電流源だけでつながったノードがある（電流源の直列など。電流源は導通に数えません）。</li>
+          <li>その部分を GND までつなぎます。電流源には、並列に抵抗を足します。</li>
+          <li>ワイヤにマウスを載せるとステータスバーにノード名（「ノード N001」など）が表示されるので、問題のノードを探してください。</li>
+        </ul>
+
+        <h4><code>FA0302</code> 端子が何にもつながっていない（警告）</h4>
+        <p>「'R1' の正極端子が何にも接続されていません」のように、つながっていない端子を名指しします。</p>
+        <ul>
+          <li>原因の例: ワイヤの端が端子に乗っていない。Sパラブロックの基準端子をつないでいない。サブサーキットの末尾に足した端子をつないでいない。</li>
+          <li>ワイヤでつなぐか、要らない部品を消します。わざと開放にしているなら、そのままで構いません（解析結果に影響しません）。</li>
+        </ul>
+
+        <h4><code>FS0801</code> ある周波数で解けない</h4>
+        <p>その周波数で回路の方程式が解けません（行列が特異）。何個の周波数で解けなかったかと、最初の周波数が出ます。</p>
+        <ul>
+          <li>電圧源の並列のように、電圧源のループがある ➡ ループをなくします。</li>
+          <li>
+            L と C だけの直列共振の枝が並列になっている ➡ 共振点ちょうどでインピーダンス 0 のループになり、その周波数だけ解けません。
+            L か C に小さな抵抗を足すか、解析の周波数を共振点から外します。
+          </li>
+          <li>Sパラブロックの基準端子が浮いている ➡ 基準端子を GND につなぎます。</li>
+          <li>制御電源の出力を、利得 1 でそのまま自分の制御に戻している ➡ 回路を見直します。</li>
+        </ul>
+
+        <h4><code>FS0601</code> 式の誤り</h4>
+        <p>「式 '{…}' を解釈できません: 未定義の変数 'x'（n 文字目）」のように、理由と位置が出ます。</p>
+        <ul>
+          <li>原因の例: 括弧の閉じ忘れ。<code>2pi</code> のように掛け算の記号を省いた。宣言していない変数を使った。サブサーキット回路図の中で、使う側の変数を使った（引き継がれません）。</li>
+          <li>式を直すか、変数を <code>.param</code> や <code>.tune</code>、サブサーキットのパラメータで宣言します（<a href="#values">値の書き方</a>）。</li>
+        </ul>
+
+        <h4><code>FA0203</code> 解析設定が無い</h4>
+        <p>有効な解析設定（<code>.ac</code> か <code>.sp</code>）が1つもありません。</p>
+        <ul>
+          <li><kbd>A</kbd> で解析設定を置きます。置いたときの値のまま OK で解析できます。</li>
+          <li>解析設定が「有効」でない（本文の先頭に <code>*</code>）か、書き方の誤り（FA0201）が無いかも確かめます。</li>
+        </ul>
+
+        <h4><code>FS0705</code> 外部データの周波数の範囲外</h4>
+        <p>CSV や Touchstone のデータの範囲の外の周波数があります。外挿はしないので、その周波数は解きません。データの有効な範囲が本文に出ます。</p>
+        <ul>
+          <li>原因の例: 解析設定の既定の <code>.ac dec 100 10k 100M</code> が、データの範囲より広い。参照しているファイルどうしの範囲が重ならない。</li>
+          <li>
+            解析の開始と終了の周波数を、データの範囲に収めます。「解析」→「外部データの周波数範囲 ...」で見比べられ、
+            解析設定の行の右端のボタンで全データが揃う範囲まで縮められます（<a href="#frequency-range">外部データの周波数範囲</a>）。
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="limitations">
+      <h2>できないこと</h2>
+      <ul>
+        <li>解析は AC（小信号の周波数特性）と Sパラメータだけです。過渡解析・DC 解析・ノイズ解析はありません。周波数は正の値だけです。</li>
+        <li>
+          部品は線形のものだけが使用できます。ダイオード・トランジスタ・オペアンプなどの能動素子はありません。
+          能動回路は、小信号の等価回路を制御電源で組むか（examples の 12・13）、
+          測定や計算で得たSパラメータ（Touchstone）をブロックとして使えば扱えます（examples の 10）。
+        </li>
+        <li>理想オペアンプ・理想変成器の専用の部品はありません。必要に応じて制御電源で組みます（examples の 11・12）。</li>
+        <li>伝送線路に損失と分散はありません。ポートの Z₀ は実数の定数だけです。</li>
+        <li>SPICE のネットリストや、他のシミュレータの回路図は読み込めません。</li>
+        <li>Touchstone は v1.0 だけです（v2.0 と、G・H パラメータは読めません）。書き出しも v1.0 の S パラメータだけです。</li>
+        <li>画像は SVG での保存と、クリップボードへのコピーだけです。PNG のファイルには保存できません。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

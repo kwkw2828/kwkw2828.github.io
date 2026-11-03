@@ -23,6 +23,7 @@
 - `_layouts/`: 共通レイアウトとソフト紹介用レイアウト
 - `assets/css/style.css`: 表示スタイル
 - `404.html`: 存在しないページにアクセスしたときの案内
+- `software/freqsim/help/`: FreqSim のヘルプの写し。freqsim リポジトリの `help/` を、リリースのたびに丸ごとコピーする（ここでは直接編集しない）
 
 ルートで公開するため、`baseurl` は空文字のままにします。
 `README.md`、`AGENTS.md`、`_trash/` などは公開対象から除外しています。
