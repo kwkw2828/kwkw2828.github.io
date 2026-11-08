@@ -19,3 +19,16 @@ layout: default
   {% endif %}
   {{ content }}
 </article>
+{% if content contains 'data-autoplay' %}
+<script>
+  // アニメーションを減らす設定の人には自動再生しない（操作ボタンで再生はできる）
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('video[data-autoplay]').forEach(function (video) {
+      video.autoplay = true;
+      var playing = video.play();
+      if (playing) playing.catch(function () {});
+    });
+  })();
+</script>
+{% endif %}
