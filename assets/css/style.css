@@ -5,6 +5,7 @@
   background: #f5f7fb;
   line-height: 1.8;
   overflow-wrap: anywhere;
+  text-autospace: normal;
 }
 
 * {
