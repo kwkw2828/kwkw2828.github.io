@@ -1,6 +1,6 @@
 ---
 title: FreqSim
-description: AC 解析専用の回路シミュレータ。部品の値をつまみで動かすと、周波数特性をその場で描き直します。
+description: AC 解析専用の回路シミュレータ。部品の値をつまみで動かして、周波数特性をすぐに確認できます。電圧・電流・電力を回路上で可視化したり、特性データ（CSV / Touchstone）を取り込んだ解析もできます。
 download_url: https://github.com/kwkw2828/FreqSim-releases/releases/latest
 image: /assets/img/freqsim/screenshot.png
 ---
